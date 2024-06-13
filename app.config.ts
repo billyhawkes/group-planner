@@ -20,7 +20,7 @@ export default createApp({
 			name: "server",
 			base: "/trpc",
 			type: "http",
-			handler: "./app/events/trpc.ts",
+			handler: "./src/events/trpc.ts",
 			target: "server",
 			plugins: () => [tsconfigPaths()],
 		},
