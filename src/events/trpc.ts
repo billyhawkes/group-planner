@@ -3,7 +3,6 @@ import { appRouter } from "src/server";
 import { createTRPCContext } from "src/server/trpc";
 import {
 	eventHandler,
-	getCookie,
 	getRequestURL,
 	getWebRequest,
 	setHeader,
@@ -14,14 +13,13 @@ export default eventHandler(async (event) => {
 	const url = getRequestURL(event);
 	const path = url.pathname.replace(/^\/trpc/, "").slice(1);
 	const req = getWebRequest(event);
-	const sessionId = getCookie(event, "auth_session");
 
 	const { status, headers, body } = await resolveResponse({
 		router: appRouter,
 		req,
 		path,
 		error: null,
-		createContext: () => createTRPCContext({ sessionId }),
+		createContext: () => createTRPCContext({ event }),
 	});
 
 	setResponseStatus(event, status);
