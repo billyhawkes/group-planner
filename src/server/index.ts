@@ -1,4 +1,5 @@
 import { mediaRouter } from "./routers/media";
+import { messagesRouter } from "./routers/messages";
 import { publicProcedure, router } from "./trpc";
 
 export const appRouter = router({
@@ -7,6 +8,7 @@ export const appRouter = router({
 		return [{ id: 1, name: "John Doe" }];
 	}),
 	media: mediaRouter,
+	messages: messagesRouter,
 });
 
 // Export type router type signature,

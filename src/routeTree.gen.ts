@@ -11,14 +11,26 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as ProfileImport } from './routes/profile'
 import { Route as MediaImport } from './routes/media'
+import { Route as EventsImport } from './routes/events'
 import { Route as ChatImport } from './routes/chat'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
 
+const ProfileRoute = ProfileImport.update({
+  path: '/profile',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const MediaRoute = MediaImport.update({
   path: '/media',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const EventsRoute = EventsImport.update({
+  path: '/events',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -50,11 +62,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatImport
       parentRoute: typeof rootRoute
     }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsImport
+      parentRoute: typeof rootRoute
+    }
     '/media': {
       id: '/media'
       path: '/media'
       fullPath: '/media'
       preLoaderRoute: typeof MediaImport
+      parentRoute: typeof rootRoute
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileImport
       parentRoute: typeof rootRoute
     }
   }
@@ -65,7 +91,9 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
   ChatRoute,
+  EventsRoute,
   MediaRoute,
+  ProfileRoute,
 })
 
 /* prettier-ignore-end */
@@ -78,7 +106,9 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/",
         "/chat",
-        "/media"
+        "/events",
+        "/media",
+        "/profile"
       ]
     },
     "/": {
@@ -87,8 +117,14 @@ export const routeTree = rootRoute.addChildren({
     "/chat": {
       "filePath": "chat.tsx"
     },
+    "/events": {
+      "filePath": "events.tsx"
+    },
     "/media": {
       "filePath": "media.tsx"
+    },
+    "/profile": {
+      "filePath": "profile.tsx"
     }
   }
 }

@@ -1,7 +1,8 @@
 import { buttonVariants } from "@/components/ui/button";
+import { testUsers } from "@/lib/data";
 import { api, apiUtils } from "@/trpc/react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Upload } from "lucide-react";
+import { Upload, User } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/media")({
@@ -55,11 +56,21 @@ function Media() {
 				Upload
 			</label>
 			{media?.map((media) => (
-				<div key={media.id} className="relative w-full h-48">
+				<div key={media.id} className="relative w-full h-48 flex flex-col gap-2">
 					<img
 						src={`https://pub-b11394b4c35a4dfda20ed9a385a16ab3.r2.dev/test-images/${media.id}`}
 						className="object-cover w-full h-full rounded-md"
 					/>
+					<div className="flex gap-2 items-center absolute top-2 left-2 group">
+						<div className="bg-muted rounded-full w-8 h-8 flex justify-center items-center">
+							<User size={18} />
+						</div>
+						<div className="bg-white group-hover:flex hidden animate-in fade-in h-8 items-center px-4 rounded shadow">
+							<p className="text-sm">
+								{testUsers[Math.floor(Math.random() * testUsers.length)].name}
+							</p>
+						</div>
+					</div>
 				</div>
 			))}
 		</div>
