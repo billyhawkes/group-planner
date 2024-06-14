@@ -43,7 +43,7 @@ export const createTRPCContext = async ({ event }: { event: H3Event<EventHandler
  * Initialization of tRPC backend
  * Should be done only once per backend!
  */
-const t = initTRPC.create();
+const t = initTRPC.context<typeof createTRPCContext>().create();
 
 /**
  * Export reusable router and procedure helpers

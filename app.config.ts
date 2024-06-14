@@ -29,6 +29,7 @@ export default createApp({
 					define: {
 						"process.env.DATABASE_URL": JSON.stringify(process.env.DATABASE_URL),
 						"process.env.R2_KEY_ID": JSON.stringify(process.env.R2_KEY_ID),
+						"process.env.R2_ENDPOINT": JSON.stringify(process.env.R2_ENDPOINT),
 						"process.env.R2_ACCESS_KEY": JSON.stringify(process.env.R2_ACCESS_KEY),
 						"process.env.DATABASE_TOKEN": JSON.stringify(process.env.DATABASE_TOKEN),
 					},
