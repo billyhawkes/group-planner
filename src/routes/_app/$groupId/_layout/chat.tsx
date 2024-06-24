@@ -5,19 +5,22 @@ import { useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { User } from "lucide-react";
 
-export const Route = createFileRoute("/chat")({
+export const Route = createFileRoute("/_app/$groupId/_layout/chat")({
 	component: Chat,
 });
 
 function Chat() {
-	const { data: messages } = api.messages.find.useQuery();
+	const { groupId } = Route.useParams();
+	const { data: messages } = api.messages.find.useQuery({
+		groupId,
+	});
 	const { mutate: sendMessage } = api.messages.send.useMutation();
 	const form = useForm({
 		defaultValues: {
 			content: "",
 		},
-		onSubmit: async ({ value }) => {
-			sendMessage(value);
+		onSubmit: async ({ value: { content } }) => {
+			sendMessage({ content, groupId });
 			form.reset();
 			apiUtils.messages.find.invalidate();
 		},

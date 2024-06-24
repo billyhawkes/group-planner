@@ -1,6 +1,6 @@
-import { getLucia } from "@/auth";
 import { getDB } from "@/db";
-import { initTRPC } from "@trpc/server";
+import { getLucia } from "@/lib/lucia";
+import { TRPCError, initTRPC } from "@trpc/server";
 import { AwsClient } from "aws4fetch";
 import { EventHandlerRequest, H3Event, getCookie } from "vinxi/http";
 
@@ -51,3 +51,19 @@ const t = initTRPC.context<typeof createTRPCContext>().create();
  */
 export const router = t.router;
 export const publicProcedure = t.procedure;
+
+export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+	if (!ctx.userId) {
+		throw new TRPCError({
+			code: "UNAUTHORIZED",
+			message: "You must be logged in to access this resource.",
+		});
+	}
+
+	return next({
+		ctx: {
+			...ctx,
+			userId: ctx.userId,
+		},
+	});
+});

@@ -1,7 +1,7 @@
+import { getDB } from "@/db";
+import { sessions, users } from "@/db/schema";
 import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
 import { Lucia } from "lucia";
-import { getDB } from "src/db";
-import { sessions, users } from "../db/schema";
 
 export const getLucia = () => {
 	const db = getDB();

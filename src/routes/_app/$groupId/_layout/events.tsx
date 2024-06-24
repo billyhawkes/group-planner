@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import { ChevronLeft, ChevronRight, User } from "lucide-react";
 import { useState } from "react";
 
-export const Route = createFileRoute("/events")({
+export const Route = createFileRoute("/_app/$groupId/_layout/events")({
 	component: Events,
 });
 

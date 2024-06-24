@@ -5,13 +5,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Upload, User } from "lucide-react";
 import { useState } from "react";
 
-export const Route = createFileRoute("/media")({
+export const Route = createFileRoute("/_app/$groupId/_layout/media")({
 	component: Media,
 });
 
 function Media() {
+	const { groupId } = Route.useParams();
 	const [file, setFile] = useState<File | null>(null);
-	const { data: media } = api.media.find.useQuery();
+	const { data: media } = api.media.find.useQuery({
+		groupId,
+	});
 	const { mutate: createMedia } = api.media.create.useMutation();
 	const { mutate: getPresignedUrl } = api.media.getPresignedUrl.useMutation({
 		onSuccess: async ({ url, id }) => {
@@ -23,13 +26,13 @@ function Media() {
 					"Content-Type": file.type,
 				},
 			});
-			await createMedia({ id });
+			await createMedia({ id, groupId });
 			apiUtils.media.find.invalidate();
 		},
 	});
 
 	return (
-		<div className="grid grid-cols-3 gap-4 w-full">
+		<div className="grid grid-cols-3 gap-4 w-full h-min">
 			<input
 				type="file"
 				id="file-upload"
