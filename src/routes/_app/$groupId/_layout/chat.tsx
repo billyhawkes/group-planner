@@ -1,20 +1,60 @@
-import { testUsers } from "@/lib/data";
-import { cn } from "@/lib/utils";
+import { Message, User } from "@/lib/types";
 import { api, apiUtils } from "@/trpc/react";
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
-import { User } from "lucide-react";
+import dayjs from "dayjs";
+import isToday from "dayjs/plugin/isToday";
+import isYesterday from "dayjs/plugin/isYesterday";
+import { useMemo } from "react";
+
+dayjs.extend(isYesterday);
+dayjs.extend(isToday);
 
 export const Route = createFileRoute("/_app/$groupId/_layout/chat")({
 	component: Chat,
 });
+
+const groupMessagesByUser = (messages: (Message & { user: User })[]) => {
+	const groupedMessages: { user: User; messages: Message[] }[] = [];
+	messages.forEach((message, index) => {
+		if (index === 0) {
+			// First message, start the first group
+			groupedMessages.push({
+				user: message.user,
+				messages: [message],
+			});
+		} else {
+			const lastGroup = groupedMessages[groupedMessages.length - 1];
+			const lastMessage = lastGroup.messages[lastGroup.messages.length - 1];
+			// Check if the current message is by the same user as the last message in the last group and if the last message was sent within 5 minutes
+			if (
+				message.user.id === lastGroup.user.id &&
+				dayjs(message.createdAt).diff(dayjs(lastMessage.createdAt), "minute") < 5
+			) {
+				// Add to the last group
+				lastGroup.messages.push(message);
+			} else {
+				// Start a new group
+				groupedMessages.push({
+					user: message.user,
+					messages: [message],
+				});
+			}
+		}
+	});
+	return groupedMessages;
+};
 
 function Chat() {
 	const { groupId } = Route.useParams();
 	const { data: messages } = api.messages.find.useQuery({
 		groupId,
 	});
+	const { data: members } = api.groups.members.useQuery({
+		groupId,
+	});
 	const { mutate: sendMessage } = api.messages.send.useMutation();
+
 	const form = useForm({
 		defaultValues: {
 			content: "",
@@ -22,20 +62,43 @@ function Chat() {
 		onSubmit: async ({ value: { content } }) => {
 			sendMessage({ content, groupId });
 			form.reset();
-			apiUtils.messages.find.invalidate();
+			apiUtils.messages.find.invalidate({
+				groupId,
+			});
 		},
 	});
+
+	// Usage
+	const groupedMessages = useMemo(() => groupMessagesByUser((messages as any) ?? []), [messages]);
 
 	return (
 		<div className="flex w-full justify-between">
 			<div className="flex justify-end flex-col flex-1 pr-8">
 				<div className="flex flex-col gap-2 py-2">
-					{messages?.map((message, i) => (
-						<div
-							key={i}
-							className="bg-[#f9f9f9] px-4 h-10 flex items-center rounded-xl self-end"
-						>
-							{message.content}
+					{groupedMessages.map(({ user, messages }, i) => (
+						<div key={i} className="flex gap-2">
+							<div className="bg-muted rounded-full w-10 h-10 flex justify-center items-center">
+								<p>{user.name ? user.name[0] : "A"}</p>
+							</div>
+							<div className="flex flex-col">
+								<p className="font-medium flex items-center">
+									{user.name}
+									<span className="text-muted-foreground text-xs ml-2">
+										{dayjs(messages[0].createdAt).isToday()
+											? "Today"
+											: dayjs(messages[0].createdAt).isYesterday()
+												? "Yesterday"
+												: dayjs(messages[0].createdAt).format(
+														"MMM D, YYYY"
+													)}
+										{", "}
+										{dayjs(messages[0].createdAt).format("h:mm A")}
+									</span>
+								</p>
+								{messages.map((message, i) => (
+									<p>{message.content}</p>
+								))}
+							</div>
 						</div>
 					))}
 				</div>
@@ -68,14 +131,14 @@ function Chat() {
 			<aside className="w-48 border-l p-8">
 				<div className="flex flex-col gap-2">
 					<p className="text-muted-foreground text-sm tracking-widest">MEMBERS</p>
-					{testUsers.map((user, i) => (
+					{members?.map((user, i) => (
 						<div key={i} className="flex gap-2 items-center">
 							<div className="bg-muted rounded-full w-8 h-8 flex justify-center items-center">
-								<User size={18} />
+								<p>{user.name ? user.name[0] : "A"}</p>
 							</div>
 							<div className="flex flex-col gap-0">
 								<p className="font-medium">{user.name}</p>
-								<p
+								{/* <p
 									className={cn(
 										"text-xs",
 										user.status === "online"
@@ -84,7 +147,7 @@ function Chat() {
 									)}
 								>
 									{user.status}
-								</p>
+								</p> */}
 							</div>
 						</div>
 					))}

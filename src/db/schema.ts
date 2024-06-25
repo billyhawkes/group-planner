@@ -9,6 +9,7 @@ export const users = sqliteTable("users", {
 		.unique()
 		.notNull(),
 	googleId: text("google_id").unique().notNull(),
+	name: text("name"),
 });
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -62,6 +63,17 @@ export const messages = sqliteTable("messages", {
 	updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
 
+export const messagesRelations = relations(messages, ({ one, many }) => ({
+	user: one(users, {
+		fields: [messages.userId],
+		references: [users.id],
+	}),
+	media: one(media, {
+		fields: [messages.mediaId],
+		references: [media.id],
+	}),
+}));
+
 export const media = sqliteTable("media", {
 	id: text("id").notNull().primaryKey(),
 	userId: text("user_id").notNull(),
@@ -69,3 +81,14 @@ export const media = sqliteTable("media", {
 	type: text("type").notNull(),
 	createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 });
+
+export const mediaRelations = relations(media, ({ one, many }) => ({
+	user: one(users, {
+		fields: [media.userId],
+		references: [users.id],
+	}),
+	group: one(groups, {
+		fields: [media.groupId],
+		references: [groups.id],
+	}),
+}));

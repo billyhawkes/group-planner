@@ -1,5 +1,6 @@
 import { usersToGroups } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 
 export const groupRouter = router({
@@ -12,4 +13,19 @@ export const groupRouter = router({
 		});
 		return data.map(({ group }) => group);
 	}),
+	members: protectedProcedure
+		.input(
+			z.object({
+				groupId: z.string(),
+			})
+		)
+		.query(async ({ ctx: { db }, input: { groupId } }) => {
+			const data = await db.query.usersToGroups.findMany({
+				where: eq(usersToGroups.groupId, groupId),
+				with: {
+					user: true,
+				},
+			});
+			return data.map(({ user }) => user);
+		}),
 });

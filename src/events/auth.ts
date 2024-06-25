@@ -103,7 +103,7 @@ export default eventHandler(async (event) => {
 		});
 		const sessionCookie = lucia.createSessionCookie(session.id);
 		setCookie(event, sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-		return sendRedirect(event, "/groups");
+		return sendRedirect(event, "/dashboard");
 	}
 
 	return {

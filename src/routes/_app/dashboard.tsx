@@ -1,8 +1,10 @@
-import { Button } from "@/components/ui/button";
-import { api, queryClient } from "@/trpc/react";
+import { buttonVariants } from "@/components/ui/button";
+import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
+
+import { Button } from "@/components/ui/button";
 
 import {
 	Form,
@@ -15,13 +17,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { EditUser, EditUserSchema } from "@/lib/types";
 
-export const Route = createFileRoute("/_app/$groupId/_layout/profile")({
-	component: Profile,
+export const Route = createFileRoute("/_app/dashboard")({
+	component: Groups,
 });
 
-function Profile() {
+function Groups() {
+	const [groups] = api.groups.find.useSuspenseQuery();
 	const [user] = api.users.me.useSuspenseQuery();
-	const navigate = Route.useNavigate();
 
 	const { mutate: editUser } = api.users.update.useMutation();
 
@@ -39,9 +41,9 @@ function Profile() {
 	}
 
 	return (
-		<div className="flex flex-col gap-4">
-			<h1>Profile</h1>
-			<p>Page to edit profile photo, email, name and login settings</p>
+		<div className="w-screen h-screen flex flex-col items-center justify-center gap-6">
+			<h1>Dashboard</h1>
+			<h1>Account</h1>
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<FormField
@@ -73,20 +75,21 @@ function Profile() {
 					<Button type="submit">Submit</Button>
 				</form>
 			</Form>
-			<hr />
-			<Button
-				variant="outline"
-				onClick={() => {
-					fetch("/auth/signout").then(() => {
-						navigate({
-							to: "/",
-						});
-						queryClient.clear();
-					});
-				}}
-			>
-				Sign out
-			</Button>
+			<h1>Groups</h1>
+			{groups?.map((group) => (
+				<Link
+					to="/$groupId/chat"
+					params={{
+						groupId: group.id,
+					}}
+					key={group.id}
+					className={buttonVariants({
+						variant: "outline",
+					})}
+				>
+					<p>{group.name}</p>
+				</Link>
+			))}
 		</div>
 	);
 }

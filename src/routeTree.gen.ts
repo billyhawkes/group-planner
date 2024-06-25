@@ -16,7 +16,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as LoginImport } from './routes/login'
 import { Route as AppImport } from './routes/_app'
 import { Route as IndexImport } from './routes/index'
-import { Route as AppGroupsImport } from './routes/_app/groups'
+import { Route as AppDashboardImport } from './routes/_app/dashboard'
 import { Route as AppGroupIdLayoutImport } from './routes/_app/$groupId/_layout'
 import { Route as AppGroupIdLayoutIndexImport } from './routes/_app/$groupId/_layout/index'
 import { Route as AppGroupIdLayoutProfileImport } from './routes/_app/$groupId/_layout/profile'
@@ -50,8 +50,8 @@ const AppGroupIdRoute = AppGroupIdImport.update({
   getParentRoute: () => AppRoute,
 } as any)
 
-const AppGroupsRoute = AppGroupsImport.update({
-  path: '/groups',
+const AppDashboardRoute = AppDashboardImport.update({
+  path: '/dashboard',
   getParentRoute: () => AppRoute,
 } as any)
 
@@ -110,11 +110,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
-    '/_app/groups': {
-      id: '/_app/groups'
-      path: '/groups'
-      fullPath: '/groups'
-      preLoaderRoute: typeof AppGroupsImport
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardImport
       parentRoute: typeof AppImport
     }
     '/_app/$groupId': {
@@ -174,7 +174,7 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
   AppRoute: AppRoute.addChildren({
-    AppGroupsRoute,
+    AppDashboardRoute,
     AppGroupIdRoute: AppGroupIdRoute.addChildren({
       AppGroupIdLayoutRoute: AppGroupIdLayoutRoute.addChildren({
         AppGroupIdLayoutChatRoute,
@@ -207,15 +207,15 @@ export const routeTree = rootRoute.addChildren({
     "/_app": {
       "filePath": "_app.tsx",
       "children": [
-        "/_app/groups",
+        "/_app/dashboard",
         "/_app/$groupId"
       ]
     },
     "/login": {
       "filePath": "login.tsx"
     },
-    "/_app/groups": {
-      "filePath": "_app/groups.tsx",
+    "/_app/dashboard": {
+      "filePath": "_app/dashboard.tsx",
       "parent": "/_app"
     },
     "/_app/$groupId": {
