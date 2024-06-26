@@ -1,8 +1,8 @@
 import { media } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { generateId } from "lucia";
 import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 
 export const mediaRouter = router({
 	find: publicProcedure
@@ -14,6 +14,9 @@ export const mediaRouter = router({
 		.query(async ({ ctx: { db }, input: { groupId } }) => {
 			return db.query.media.findMany({
 				where: eq(media.groupId, groupId),
+				with: {
+					user: true,
+				},
 			});
 		}),
 	getPresignedUrl: publicProcedure
@@ -21,12 +24,12 @@ export const mediaRouter = router({
 			z.object({
 				type: z.string(),
 				size: z.number(),
+				groupId: z.string(),
 			})
 		)
-		.mutation(async ({ ctx: { r2 }, input: { type, size } }) => {
+		.mutation(async ({ ctx: { r2 }, input: { type, size, groupId } }) => {
 			const id = generateId(15);
-			console.log(`${process.env.R2_ENDPOINT}/test-images/${id}`);
-			const res = await r2.sign(`${process.env.R2_ENDPOINT}/test-images/${id}`, {
+			const res = await r2.sign(`${process.env.R2_ENDPOINT}/${groupId}/media/${id}`, {
 				method: "PUT",
 				headers: {
 					"Content-Type": type,
@@ -36,27 +39,39 @@ export const mediaRouter = router({
 					signQuery: true,
 				},
 			});
-			console.log(res.url, id);
 
 			return {
 				url: res.url,
 				id,
 			};
 		}),
-	create: publicProcedure
+	create: protectedProcedure
 		.input(
 			z.object({
 				id: z.string(),
 				groupId: z.string(),
 			})
 		)
-		.mutation(async ({ ctx: { db }, input: { id, groupId } }) => {
+		.mutation(async ({ ctx: { db, userId }, input: { id, groupId } }) => {
 			return db.insert(media).values({
 				id,
-				userId: "1",
+				userId,
 				groupId,
 				type: "image",
 				createdAt: new Date(),
+			});
+		}),
+	delete: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+				groupId: z.string(),
+			})
+		)
+		.mutation(async ({ ctx: { db, r2, userId }, input: { groupId, id } }) => {
+			await db.delete(media).where(and(eq(media.id, id), eq(media.userId, userId)));
+			r2.fetch(`${process.env.R2_ENDPOINT}/${groupId}/media/${id}`, {
+				method: "DELETE",
 			});
 		}),
 });

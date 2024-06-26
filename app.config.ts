@@ -27,11 +27,7 @@ export default createApp({
 				tsconfigPaths(),
 				config("custom", {
 					define: {
-						"process.env.R2_KEY_ID": JSON.stringify(process.env.R2_KEY_ID),
-						"process.env.R2_ENDPOINT": JSON.stringify(process.env.R2_ENDPOINT),
-						"process.env.R2_ACCESS_KEY": JSON.stringify(process.env.R2_ACCESS_KEY),
-						"process.env.DATABASE_URL": JSON.stringify(process.env.DATABASE_URL),
-						"process.env.DATABASE_TOKEN": JSON.stringify(process.env.DATABASE_TOKEN),
+						"import.meta.env.VITE_R2_URL": JSON.stringify(process.env.VITE_R2_URL),
 					},
 				}),
 			],
@@ -41,7 +37,20 @@ export default createApp({
 			type: "spa",
 			handler: "index.html",
 			target: "browser",
-			plugins: () => [tsconfigPaths(), reactRefresh(), TanStackRouterVite()],
+			plugins: () => [
+				tsconfigPaths(),
+				reactRefresh(),
+				TanStackRouterVite(),
+				config("custom", {
+					define: {
+						"process.env.R2_KEY_ID": JSON.stringify(process.env.R2_KEY_ID),
+						"process.env.R2_ENDPOINT": JSON.stringify(process.env.R2_ENDPOINT),
+						"process.env.R2_ACCESS_KEY": JSON.stringify(process.env.R2_ACCESS_KEY),
+						"process.env.DATABASE_URL": JSON.stringify(process.env.DATABASE_URL),
+						"process.env.DATABASE_TOKEN": JSON.stringify(process.env.DATABASE_TOKEN),
+					},
+				}),
+			],
 		},
 		{
 			name: "auth",
