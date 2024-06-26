@@ -27,7 +27,11 @@ export default createApp({
 				tsconfigPaths(),
 				config("custom", {
 					define: {
-						"import.meta.env.VITE_R2_URL": JSON.stringify(process.env.VITE_R2_URL),
+						"process.env.R2_KEY_ID": JSON.stringify(process.env.R2_KEY_ID),
+						"process.env.R2_ENDPOINT": JSON.stringify(process.env.R2_ENDPOINT),
+						"process.env.R2_ACCESS_KEY": JSON.stringify(process.env.R2_ACCESS_KEY),
+						"process.env.DATABASE_URL": JSON.stringify(process.env.DATABASE_URL),
+						"process.env.DATABASE_TOKEN": JSON.stringify(process.env.DATABASE_TOKEN),
 					},
 				}),
 			],
@@ -43,11 +47,7 @@ export default createApp({
 				TanStackRouterVite(),
 				config("custom", {
 					define: {
-						"process.env.R2_KEY_ID": JSON.stringify(process.env.R2_KEY_ID),
-						"process.env.R2_ENDPOINT": JSON.stringify(process.env.R2_ENDPOINT),
-						"process.env.R2_ACCESS_KEY": JSON.stringify(process.env.R2_ACCESS_KEY),
-						"process.env.DATABASE_URL": JSON.stringify(process.env.DATABASE_URL),
-						"process.env.DATABASE_TOKEN": JSON.stringify(process.env.DATABASE_TOKEN),
+						"import.meta.env.VITE_R2_URL": JSON.stringify(process.env.VITE_R2_URL),
 					},
 				}),
 			],
@@ -63,8 +63,12 @@ export default createApp({
 				config("custom", {
 					define: {
 						"process.env.SITE_URL": JSON.stringify(process.env.SITE_URL),
-						"process.env.GOOGLE_CLIENT_ID": JSON.stringify(process.env.DATABASE_URL),
-						"process.env.GOOGLE_CLIENT_SECRET": JSON.stringify(process.env.R2_KEY_ID),
+						"process.env.GOOGLE_CLIENT_ID": JSON.stringify(
+							process.env.GOOGLE_CLIENT_ID
+						),
+						"process.env.GOOGLE_CLIENT_SECRET": JSON.stringify(
+							process.env.GOOGLE_CLIENT_SECRET
+						),
 						"process.env.DATABASE_URL": JSON.stringify(process.env.DATABASE_URL),
 						"process.env.DATABASE_TOKEN": JSON.stringify(process.env.DATABASE_TOKEN),
 					},
