@@ -87,9 +87,9 @@ function Layout() {
 	const [groups] = api.groups.find.useSuspenseQuery();
 
 	return (
-		<div>
+		<div className="">
 			<main className="flex flex-col h-screen">
-				<div className="p-8 flex gap-2 justify-between">
+				<div className="px-8 h-20 items-center flex gap-2 justify-between">
 					<div className="flex gap-2">
 						<GroupPicker groups={groups} />
 						<Link
@@ -134,7 +134,7 @@ function Layout() {
 						<User size={18} />
 					</Link>
 				</div>
-				<div className="flex-1 p-8 flex">
+				<div className="flex-1 p-8 flex h-[calc(100%-80px)]">
 					<Outlet />
 				</div>
 			</main>

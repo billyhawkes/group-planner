@@ -80,6 +80,7 @@ function Chat() {
 					...((messages as any) ?? []),
 					message,
 				]);
+				apiUtils.messages.find.invalidate({ groupId });
 			}
 		);
 		return () => {
@@ -92,8 +93,8 @@ function Chat() {
 
 	return (
 		<div className="flex w-full justify-between">
-			<div className="flex justify-end flex-col flex-1 pr-8">
-				<div className="flex flex-col gap-2 py-2">
+			<div className="flex justify-end flex-col flex-1">
+				<div className="flex flex-col gap-2 py-2 overflow-auto shrink pr-8">
 					{groupedMessages.map(({ user, messages }, i) => (
 						<div key={i} className="flex gap-2">
 							<div className="bg-muted rounded-full w-10 h-10 flex justify-center items-center">
@@ -127,6 +128,7 @@ function Chat() {
 						e.stopPropagation();
 						form.handleSubmit();
 					}}
+					className="pr-8"
 				>
 					<form.Field
 						name="content"
