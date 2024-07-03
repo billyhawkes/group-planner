@@ -1,3 +1,4 @@
+import { pusherClient } from "@/lib/pusher";
 import { Message, User } from "@/lib/types";
 import { api, apiUtils } from "@/trpc/react";
 import { useForm } from "@tanstack/react-form";
@@ -5,7 +6,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 dayjs.extend(isYesterday);
 dayjs.extend(isToday);
@@ -62,11 +63,29 @@ function Chat() {
 		onSubmit: async ({ value: { content } }) => {
 			sendMessage({ content, groupId });
 			form.reset();
-			apiUtils.messages.find.invalidate({
-				groupId,
-			});
 		},
 	});
+
+	useEffect(() => {
+		pusherClient.subscribe(`group-${groupId}`);
+		pusherClient.unbind("message");
+		pusherClient.bind(
+			"message",
+			(
+				message: Message & {
+					user: User;
+				}
+			) => {
+				apiUtils.messages.find.setData({ groupId }, (messages) => [
+					...((messages as any) ?? []),
+					message,
+				]);
+			}
+		);
+		return () => {
+			pusherClient.unsubscribe(`group-${groupId}`);
+		};
+	}, []);
 
 	// Usage
 	const groupedMessages = useMemo(() => groupMessagesByUser((messages as any) ?? []), [messages]);
@@ -95,8 +114,8 @@ function Chat() {
 										{dayjs(messages[0].createdAt).format("h:mm A")}
 									</span>
 								</p>
-								{messages.map((message, i) => (
-									<p>{message.content}</p>
+								{messages.map((message, y) => (
+									<p key={i + y}>{message.content}</p>
 								))}
 							</div>
 						</div>

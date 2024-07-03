@@ -83,7 +83,6 @@ export default eventHandler(async (event) => {
 			.parse(user);
 
 		let userId: string;
-		let redirect: string;
 		const existingUser = await db.query.users.findFirst({
 			where: eq(users.googleId, googleId),
 		});

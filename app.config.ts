@@ -32,6 +32,8 @@ export default createApp({
 						"process.env.R2_ACCESS_KEY": JSON.stringify(process.env.R2_ACCESS_KEY),
 						"process.env.DATABASE_URL": JSON.stringify(process.env.DATABASE_URL),
 						"process.env.DATABASE_TOKEN": JSON.stringify(process.env.DATABASE_TOKEN),
+						"process.env.VITE_PUSHER_KEY": JSON.stringify(process.env.VITE_PUSHER_KEY),
+						"process.env.PUSHER_SECRET": JSON.stringify(process.env.PUSHER_SECRET),
 					},
 				}),
 			],
@@ -48,6 +50,9 @@ export default createApp({
 				config("custom", {
 					define: {
 						"import.meta.env.VITE_R2_URL": JSON.stringify(process.env.VITE_R2_URL),
+						"import.meta.env.VITE_PUSHER_KEY": JSON.stringify(
+							process.env.VITE_PUSHER_KEY
+						),
 					},
 				}),
 			],
