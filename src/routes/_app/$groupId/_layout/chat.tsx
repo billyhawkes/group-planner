@@ -48,13 +48,9 @@ const groupMessagesByUser = (messages: (Message & { user: User })[]) => {
 
 function Chat() {
 	const { groupId } = Route.useParams();
-	const { data: messages } = api.messages.find.useQuery({
-		groupId,
-	});
 	const { data: members } = api.groups.members.useQuery({
 		groupId,
 	});
-	const { mutate: sendMessage } = api.messages.send.useMutation();
 
 	const form = useForm({
 		defaultValues: {
@@ -66,9 +62,23 @@ function Chat() {
 		},
 	});
 
+	// Query for all group messages
+	const { data: messages } = api.messages.find.useQuery({
+		groupId,
+	});
+
+	// Mutation for sending a message
+	const { mutate: sendMessage } = api.messages.send.useMutation();
+
+	// Subscribe to new messages
 	useEffect(() => {
+		// Subscribe to the group channel
 		pusherClient.subscribe(`group-${groupId}`);
+
+		// Unbind the previous event listener (prevents duplicates)
 		pusherClient.unbind("message");
+
+		// Bind the message to update the messages list
 		pusherClient.bind(
 			"message",
 			(
@@ -83,6 +93,8 @@ function Chat() {
 				apiUtils.messages.find.invalidate({ groupId });
 			}
 		);
+
+		// On unmount, unsubscribe from the channel
 		return () => {
 			pusherClient.unsubscribe(`group-${groupId}`);
 		};
@@ -94,7 +106,7 @@ function Chat() {
 	return (
 		<div className="flex w-full justify-between">
 			<div className="flex justify-end flex-col flex-1">
-				<div className="flex flex-col gap-2 py-2 overflow-auto shrink pr-8">
+				<div className="flex flex-col gap-2 py-2 overflow-auto shrink sm:pr-8">
 					{groupedMessages.map(({ user, messages }, i) => (
 						<div key={i} className="flex gap-2">
 							<div className="bg-muted rounded-full w-10 h-10 flex justify-center items-center">
@@ -128,7 +140,7 @@ function Chat() {
 						e.stopPropagation();
 						form.handleSubmit();
 					}}
-					className="pr-8"
+					className="sm:pr-8"
 				>
 					<form.Field
 						name="content"
@@ -149,7 +161,7 @@ function Chat() {
 					/>
 				</form>
 			</div>
-			<aside className="w-48 border-l p-8">
+			<aside className="w-48 border-l p-8 hidden sm:flex">
 				<div className="flex flex-col gap-2">
 					<p className="text-muted-foreground text-sm tracking-widest">MEMBERS</p>
 					{members?.map((user, i) => (

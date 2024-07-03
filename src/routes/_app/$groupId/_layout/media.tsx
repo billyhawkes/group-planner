@@ -44,7 +44,7 @@ function Media() {
 	});
 
 	return (
-		<div className="grid grid-cols-3 gap-4 w-full h-min">
+		<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1 w-full h-min">
 			<input
 				type="file"
 				id="file-upload"
@@ -110,7 +110,7 @@ function Media() {
 			{openImage && (
 				<div
 					onClick={() => setOpenImage(null)}
-					className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-20 gap-4"
+					className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center gap-4"
 				>
 					<Button
 						onClick={(e) => {
@@ -122,14 +122,14 @@ function Media() {
 							);
 						}}
 						variant="outline"
-						className="min-w-12 h-12 rounded-full"
+						className="fixed bottom-4 sm:bottom-auto left-4 w-12 h-12 rounded-full opacity-80"
 						size="icon"
 					>
 						<ChevronLeft size={24} />
 					</Button>
 					<img
 						src={`${import.meta.env.VITE_R2_URL}/${groupId}/media/${openImage}`}
-						className="object-contain max-w-full max-h-full"
+						className="object-cover max-w-full max-h-full"
 					/>
 					<Button
 						onClick={(e) => {
@@ -141,7 +141,7 @@ function Media() {
 							);
 						}}
 						variant="outline"
-						className="min-w-12 h-12 rounded-full"
+						className="fixed bottom-4 sm:bottom-auto right-4 w-12 h-12 rounded-full opacity-80"
 						size="icon"
 					>
 						<ChevronRight size={24} />

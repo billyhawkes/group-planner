@@ -1,5 +1,5 @@
 import { getDB } from "@/db";
-import { users } from "@/db/schema";
+import { users, usersToGroups } from "@/db/schema";
 import { getLucia } from "@/lib/lucia";
 import { Google, generateCodeVerifier, generateState } from "arctic";
 import { eq } from "drizzle-orm";
@@ -93,6 +93,12 @@ export default eventHandler(async (event) => {
 				id: userId,
 				email,
 				googleId,
+				name: "Anonymous",
+			});
+			// Temporary: Add user to test group
+			await db.insert(usersToGroups).values({
+				userId,
+				groupId: "1",
 			});
 		} else {
 			userId = existingUser.id;
