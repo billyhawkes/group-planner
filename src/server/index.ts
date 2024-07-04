@@ -1,3 +1,4 @@
+import { eventsRouter } from "./routers/events";
 import { groupRouter } from "./routers/group";
 import { mediaRouter } from "./routers/media";
 import { messagesRouter } from "./routers/messages";
@@ -13,6 +14,7 @@ export const appRouter = router({
 	messages: messagesRouter,
 	users: userRouter,
 	groups: groupRouter,
+	events: eventsRouter,
 });
 
 // Export type router type signature,

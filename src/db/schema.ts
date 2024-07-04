@@ -58,7 +58,6 @@ export const messages = sqliteTable("messages", {
 	userId: text("user_id").notNull(),
 	groupId: text("group_id").notNull(),
 	content: text("content").notNull(),
-	mediaId: text("media_id"),
 	createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 	updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
@@ -67,10 +66,6 @@ export const messagesRelations = relations(messages, ({ one, many }) => ({
 	user: one(users, {
 		fields: [messages.userId],
 		references: [users.id],
-	}),
-	media: one(media, {
-		fields: [messages.mediaId],
-		references: [media.id],
 	}),
 }));
 
@@ -90,5 +85,43 @@ export const mediaRelations = relations(media, ({ one, many }) => ({
 	group: one(groups, {
 		fields: [media.groupId],
 		references: [groups.id],
+	}),
+}));
+
+export const userToEvents = sqliteTable("user_to_events", {
+	userId: text("user_id").notNull(),
+	eventId: text("event_id").notNull(),
+	accepted: integer("id", { mode: "boolean" }),
+});
+
+export const userToEventsRelations = relations(userToEvents, ({ one, many }) => ({
+	user: one(users, {
+		fields: [userToEvents.userId],
+		references: [users.id],
+	}),
+	event: one(events, {
+		fields: [userToEvents.eventId],
+		references: [events.id],
+	}),
+}));
+
+export const events = sqliteTable("events", {
+	id: text("id").notNull().primaryKey(),
+	groupId: text("group_id").notNull(),
+	userId: text("user_id").notNull(),
+	name: text("name").notNull(),
+	description: text("description"),
+	startsAt: integer("starts_at", { mode: "timestamp" }).notNull(),
+	endsAt: integer("ends_at", { mode: "timestamp" }).notNull(),
+});
+
+export const eventsRelations = relations(events, ({ one, many }) => ({
+	group: one(groups, {
+		fields: [events.groupId],
+		references: [groups.id],
+	}),
+	user: one(users, {
+		fields: [events.userId],
+		references: [users.id],
 	}),
 }));

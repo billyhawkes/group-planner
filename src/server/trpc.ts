@@ -3,6 +3,7 @@ import { getLucia } from "@/lib/lucia";
 import { TRPCError, initTRPC } from "@trpc/server";
 import { AwsClient } from "aws4fetch";
 import Pusher from "pusher";
+import superjson from "superjson";
 import { EventHandlerRequest, H3Event, getCookie } from "vinxi/http";
 
 export const createTRPCContext = async ({ event }: { event: H3Event<EventHandlerRequest> }) => {
@@ -51,7 +52,9 @@ export const createTRPCContext = async ({ event }: { event: H3Event<EventHandler
  * Initialization of tRPC backend
  * Should be done only once per backend!
  */
-const t = initTRPC.context<typeof createTRPCContext>().create();
+const t = initTRPC.context<typeof createTRPCContext>().create({
+	transformer: superjson,
+});
 
 /**
  * Export reusable router and procedure helpers

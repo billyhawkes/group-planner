@@ -1,4 +1,4 @@
-import { messages, users } from "@/db/schema";
+import { events, messages, users } from "@/db/schema";
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -16,3 +16,15 @@ export type EditUser = z.infer<typeof EditUserSchema>;
 
 export const MessageSchema = createSelectSchema(messages);
 export type Message = z.infer<typeof MessageSchema>;
+
+export const EventSchema = createSelectSchema(events);
+export type Event = z.infer<typeof EventSchema>;
+
+export const CreateEventSchema = EventSchema.omit({
+	id: true,
+	userId: true,
+}).extend({
+	name: z.string().min(1).max(255),
+	description: z.string().min(1).max(1024).optional(),
+});
+export type CreateEvent = z.infer<typeof CreateEventSchema>;
