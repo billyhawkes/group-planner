@@ -34,7 +34,6 @@ export const messagesRouter = router({
 				content,
 				groupId,
 				userId,
-				mediaId: null,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			};

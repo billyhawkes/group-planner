@@ -1,0 +1,8 @@
+{
+  "virtual:#vinxi/handler/auth": {
+    "file": "auth.js",
+    "name": "auth",
+    "src": "virtual:#vinxi/handler/auth",
+    "isEntry": true
+  }
+}

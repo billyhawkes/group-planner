@@ -6,6 +6,9 @@ declare module 'nitropack' {
     '/trpc': {
       'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../build/server/trpc/server').default>>>>
     }
+    '/auth': {
+      'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../build/auth/auth/auth').default>>>>
+    }
     '/': {
       'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../#vinxi/spa/client').default>>>>
     }
