@@ -162,14 +162,14 @@ function Layout() {
 	return (
 		<div className="">
 			<main className="flex flex-col h-screen">
-				<div className="px-4 sm:px-8 h-20 items-center flex gap-2 justify-between">
+				<div className="px-4 sm:px-8 min-h-20 h-20 items-center flex gap-2 justify-between">
 					<GroupPicker groups={groups} />
-					<div className="gap-2 sm:flex hidden justify-between">
+					<div className="gap-2 md:flex hidden justify-between">
 						<LinksList groupId={groupId} />
 					</div>
 					<Sheet>
 						<SheetTrigger asChild>
-							<Button variant="outline" size="icon" className="sm:hidden">
+							<Button variant="outline" size="icon" className="md:hidden">
 								<Menu size={18} />
 							</Button>
 						</SheetTrigger>
@@ -183,7 +183,7 @@ function Layout() {
 						</SheetContent>
 					</Sheet>
 				</div>
-				<div className="flex-1 p-4 sm:p-8 flex h-[calc(100%-80px)]">
+				<div className="flex-1 flex h-[calc(100%-80px)]">
 					<Outlet />
 				</div>
 			</main>

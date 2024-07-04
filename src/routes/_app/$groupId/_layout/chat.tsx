@@ -104,7 +104,7 @@ function Chat() {
 	const groupedMessages = useMemo(() => groupMessagesByUser((messages as any) ?? []), [messages]);
 
 	return (
-		<div className="flex w-full justify-between">
+		<div className="flex w-full justify-between p-4 sm:p-8">
 			<div className="flex justify-end flex-col flex-1">
 				<div className="flex flex-col gap-2 py-2 overflow-auto shrink sm:pr-8">
 					{groupedMessages.map(({ user, messages }, i) => (

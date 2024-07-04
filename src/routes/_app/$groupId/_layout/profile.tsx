@@ -39,7 +39,7 @@ function Profile() {
 	}
 
 	return (
-		<div className="flex flex-col gap-4">
+		<div className="flex flex-col gap-4 p-4 sm:p-8">
 			<h1>Profile</h1>
 			<p>Page to edit profile photo, email, name and login settings</p>
 			<Form {...form}>

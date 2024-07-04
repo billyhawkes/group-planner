@@ -33,8 +33,8 @@ function Events() {
 	const fillerBoxes = Array.from({ length: 7 - ((daysThisMonth + startDay) % 7) });
 
 	return (
-		<div className="flex-1 flex flex-col -mt-8">
-			<div className="flex gap-2">
+		<div className="h-full flex flex-col">
+			<div className="flex gap-2 px-4 sm:px-8">
 				<Button
 					size={"icon"}
 					variant={"outline"}
@@ -57,18 +57,18 @@ function Events() {
 			<hr className="mt-4" />
 			<div className="grid grid-cols-7">
 				{["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => (
-					<div key={day} className="p-4 bg-white">
-						<p>{day}</p>
+					<div key={day} className="py-2 sm:py-4 bg-white">
+						<p className="text-center">{day}</p>
 					</div>
 				))}
 			</div>
 			<div className="grid grid-cols-7 flex-1 gap-[1px] bg-[#ccc]">
 				{Array.from({ length: startDay }).map((_, i) => (
-					<div key={i} className="flex-1 p-4 bg-white"></div>
+					<div key={i} className="flex-1 bg-white"></div>
 				))}
 				{datesInMonth.map((day, i) => (
-					<div key={i} className="flex-1 p-4 bg-white">
-						<p>{day.date()}</p>
+					<div key={i} className="flex-1 sm:p-4 bg-white">
+						<span className="px-1 sm:px-0">{day.date()}</span>
 						{testEvents
 							.filter((event) => day.isSame(event.start, "day"))
 							.map((event) => (
@@ -76,13 +76,15 @@ function Events() {
 									<SheetTrigger asChild>
 										<div
 											key={event.id}
-											className="bg-muted rounded p-2 cursor-pointer"
+											className="bg-muted rounded p-1 pr-0 sm:p-2 cursor-pointer"
 										>
-											<p className="text-sm text-muted-foreground">
+											<p className="text-sm hidden sm:block text-muted-foreground">
 												{dayjs(event.start).format("h:mm A")} -{" "}
 												{dayjs(event.end).format("h:mm A")}
 											</p>
-											<p>{event.title}</p>
+											<p className="overflow-hidden text-sm sm:text-base whitespace-nowrap sm:whitespace-normal">
+												{event.title}
+											</p>
 										</div>
 									</SheetTrigger>
 									<SheetContent>

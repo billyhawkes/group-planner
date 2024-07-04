@@ -2,7 +2,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { api, apiUtils } from "@/trpc/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Trash, Upload } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/_app/$groupId/_layout/media")({
 	component: Media,
@@ -43,8 +43,32 @@ function Media() {
 		},
 	});
 
+	// Inside your component
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (!openImage || !media) return;
+
+			const currentIndex = media.findIndex((m) => m.id === openImage);
+			if (e.key === "ArrowLeft") {
+				const newImage = media[currentIndex - 1]?.id ?? media?.[media.length - 1]?.id;
+				setOpenImage(newImage);
+			} else if (e.key === "ArrowRight") {
+				const newImage = media[currentIndex + 1]?.id ?? media?.[0]?.id;
+				setOpenImage(newImage);
+			}
+		};
+
+		// Add event listener
+		window.addEventListener("keydown", handleKeyDown);
+
+		// Remove event listener on cleanup
+		return () => {
+			window.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [openImage, media]);
+
 	return (
-		<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1 w-full h-min">
+		<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1 w-full h-min p-4 sm:p-8">
 			<input
 				type="file"
 				id="file-upload"
