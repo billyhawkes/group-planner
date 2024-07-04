@@ -14,6 +14,10 @@ export const users = sqliteTable("users", {
 
 export const usersRelations = relations(users, ({ one, many }) => ({
 	usersToGroups: many(usersToGroups),
+	messages: many(messages),
+	media: many(media),
+	events: many(events),
+	userToEvents: many(userToEvents),
 }));
 
 export const sessions = sqliteTable("sessions", {
@@ -88,11 +92,17 @@ export const mediaRelations = relations(media, ({ one, many }) => ({
 	}),
 }));
 
-export const userToEvents = sqliteTable("user_to_events", {
-	userId: text("user_id").notNull(),
-	eventId: text("event_id").notNull(),
-	accepted: integer("id", { mode: "boolean" }),
-});
+export const userToEvents = sqliteTable(
+	"user_to_events",
+	{
+		userId: text("user_id").notNull(),
+		eventId: text("event_id").notNull(),
+		accepted: integer("id", { mode: "boolean" }),
+	},
+	(t) => ({
+		pk: primaryKey({ columns: [t.userId, t.eventId] }),
+	})
+);
 
 export const userToEventsRelations = relations(userToEvents, ({ one, many }) => ({
 	user: one(users, {
@@ -116,6 +126,7 @@ export const events = sqliteTable("events", {
 });
 
 export const eventsRelations = relations(events, ({ one, many }) => ({
+	userToEvents: many(userToEvents),
 	group: one(groups, {
 		fields: [events.groupId],
 		references: [groups.id],

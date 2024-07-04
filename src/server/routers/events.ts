@@ -16,6 +16,14 @@ export const eventsRouter = router({
 		.query(async ({ ctx: { db }, input: { groupId } }) => {
 			return db.query.events.findMany({
 				where: eq(usersToGroups.groupId, groupId),
+				with: {
+					user: true,
+					userToEvents: {
+						with: {
+							user: true,
+						},
+					},
+				},
 			});
 		}),
 	create: protectedProcedure

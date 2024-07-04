@@ -1,3 +1,4 @@
+import Member from "@/components/Member";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -16,16 +17,21 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "@/components/ui/sheet";
+import {
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
+} from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
-import { testUsers } from "@/lib/data";
 import { CreateEventSchema } from "@/lib/types";
-import { cn } from "@/lib/utils";
 import { api, apiUtils } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
-import { ChevronLeft, ChevronRight, User } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -169,6 +175,14 @@ function Events() {
 
 	const fillerBoxes = Array.from({ length: 7 - ((daysThisMonth + startDay) % 7) });
 
+	const { mutate: updateStatus } = api.events.status.useMutation({
+		onSuccess: () => {
+			apiUtils.events.find.invalidate({
+				groupId,
+			});
+		},
+	});
+
 	return (
 		<div className="h-full flex flex-col w-full">
 			<div className="flex justify-between items-center px-4 sm:px-8">
@@ -229,47 +243,59 @@ function Events() {
 									</SheetTrigger>
 									<SheetContent>
 										<SheetHeader className="flex flex-col space-y-0 gap-4">
-											<h2>{event.name}</h2>
+											<SheetTitle className="scroll-m-20 text-3xl font-semibold tracking-tight;">
+												{event.name}
+											</SheetTitle>
 											<p className="text-sm text-muted-foreground">
 												{dayjs(event.startsAt).format("h:mm A")} -{" "}
 												{dayjs(event.endsAt).format("h:mm A")}
 											</p>
-											<p className="text-sm text-muted-foreground">
-												{event.description}
-											</p>
+											{event.description && (
+												<SheetDescription className="text-sm text-muted-foreground">
+													{event.description}
+												</SheetDescription>
+											)}
 											<hr />
 											<div className="flex justify-between gap-2">
-												<Button variant={"outline"} className="flex-1">
+												<Button
+													variant={"outline"}
+													className="flex-1"
+													onClick={() =>
+														updateStatus({
+															id: event.id,
+															accepted: true,
+														})
+													}
+												>
 													Accept
 												</Button>
-												<Button variant={"outline"} className="flex-1">
+												<Button
+													variant={"outline"}
+													className="flex-1"
+													onClick={() =>
+														updateStatus({
+															id: event.id,
+															accepted: false,
+														})
+													}
+												>
 													Decline
 												</Button>
 											</div>
-											<p className="text-muted-foreground text-sm tracking-widest">
-												MEMBERS
-											</p>
-											{testUsers.map((user, i) => (
-												<div key={i} className="flex gap-2 items-center">
-													<div className="bg-muted rounded-full w-8 h-8 flex justify-center items-center">
-														<User size={18} />
-													</div>
-													<div className="flex flex-col gap-0">
-														<p className="font-medium">{user.name}</p>
-														<p
-															className={cn(
-																"text-xs",
-																user.status === "online"
-																	? "text-green-600"
-																	: "text-muted-foreground"
-															)}
-														>
-															{user.status === "online"
-																? "Accepted"
-																: "Declined"}
-														</p>
-													</div>
-												</div>
+											{event.userToEvents.length > 0 && (
+												<p className="text-muted-foreground text-sm tracking-widest">
+													MEMBERS
+												</p>
+											)}
+											{event.userToEvents.map(({ user, accepted }, i) => (
+												<Member
+													key={i}
+													user={user}
+													hightlight={{
+														text: accepted ? "Accepted" : "Declined",
+														type: accepted ? "on" : "off",
+													}}
+												/>
 											))}
 										</SheetHeader>
 									</SheetContent>
