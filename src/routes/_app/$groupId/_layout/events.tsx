@@ -63,7 +63,6 @@ const CreateEventDialog = ({ groupId }: { groupId: string }) => {
 	const form = useForm<CreateEventForm>({
 		resolver: zodResolver(CreateEventFormSchema),
 		defaultValues: {
-			groupId,
 			name: "",
 			description: undefined,
 			startsAt: "",
@@ -73,7 +72,12 @@ const CreateEventDialog = ({ groupId }: { groupId: string }) => {
 
 	// 2. Define a submit handler.
 	const onSubmit = (values: CreateEventForm) => {
-		mutate({ ...values, startsAt: new Date(values.startsAt), endsAt: new Date(values.endsAt) });
+		mutate({
+			...values,
+			groupId,
+			startsAt: new Date(values.startsAt),
+			endsAt: new Date(values.endsAt),
+		});
 	};
 
 	return (
@@ -264,6 +268,7 @@ function Events() {
 														updateStatus({
 															id: event.id,
 															accepted: true,
+															groupId,
 														})
 													}
 												>
@@ -276,6 +281,7 @@ function Events() {
 														updateStatus({
 															id: event.id,
 															accepted: false,
+															groupId,
 														})
 													}
 												>

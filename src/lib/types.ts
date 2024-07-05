@@ -23,6 +23,7 @@ export type Event = z.infer<typeof EventSchema>;
 export const CreateEventSchema = EventSchema.omit({
 	id: true,
 	userId: true,
+	groupId: true,
 }).extend({
 	name: z.string().min(1).max(255),
 	description: z.string().min(1).max(1024).optional(),

@@ -20,12 +20,16 @@ function Media() {
 
 	const { mutate: deleteMedia } = api.media.delete.useMutation({
 		onSuccess: () => {
-			apiUtils.media.find.invalidate();
+			apiUtils.media.find.invalidate({
+				groupId,
+			});
 		},
 	});
 	const { mutate: createMedia } = api.media.create.useMutation({
 		onSuccess: () => {
-			apiUtils.media.find.invalidate();
+			apiUtils.media.find.invalidate({
+				groupId,
+			});
 		},
 	});
 	const { mutate: getPresignedUrl } = api.media.getPresignedUrl.useMutation({
@@ -39,7 +43,6 @@ function Media() {
 				},
 			});
 			await createMedia({ id, groupId });
-			apiUtils.media.find.invalidate();
 		},
 	});
 

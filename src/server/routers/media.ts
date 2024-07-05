@@ -1,30 +1,24 @@
 import { media } from "@/db/schema";
+import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { generateId } from "lucia";
 import { z } from "zod";
-import { protectedProcedure, publicProcedure, router } from "../trpc";
+import { protectedGroupProcedure, router } from "../trpc";
 
 export const mediaRouter = router({
-	find: publicProcedure
-		.input(
-			z.object({
-				groupId: z.string(),
-			})
-		)
-		.query(async ({ ctx: { db }, input: { groupId } }) => {
-			return db.query.media.findMany({
-				where: eq(media.groupId, groupId),
-				with: {
-					user: true,
-				},
-			});
-		}),
-	getPresignedUrl: publicProcedure
+	find: protectedGroupProcedure.query(async ({ ctx: { db }, input: { groupId } }) => {
+		return db.query.media.findMany({
+			where: eq(media.groupId, groupId),
+			with: {
+				user: true,
+			},
+		});
+	}),
+	getPresignedUrl: protectedGroupProcedure
 		.input(
 			z.object({
 				type: z.string(),
 				size: z.number(),
-				groupId: z.string(),
 			})
 		)
 		.mutation(async ({ ctx: { r2 }, input: { type, size, groupId } }) => {
@@ -45,11 +39,10 @@ export const mediaRouter = router({
 				id,
 			};
 		}),
-	create: protectedProcedure
+	create: protectedGroupProcedure
 		.input(
 			z.object({
 				id: z.string(),
-				groupId: z.string(),
 			})
 		)
 		.mutation(async ({ ctx: { db, userId }, input: { id, groupId } }) => {
@@ -61,15 +54,25 @@ export const mediaRouter = router({
 				createdAt: new Date(),
 			});
 		}),
-	delete: protectedProcedure
+	delete: protectedGroupProcedure
 		.input(
 			z.object({
 				id: z.string(),
-				groupId: z.string(),
 			})
 		)
 		.mutation(async ({ ctx: { db, r2, userId }, input: { groupId, id } }) => {
-			await db.delete(media).where(and(eq(media.id, id), eq(media.userId, userId)));
+			const deletedMedia = await db
+				.delete(media)
+				.where(and(eq(media.id, id), eq(media.userId, userId)))
+				.returning();
+
+			if (deletedMedia.length === 0) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Media not found",
+				});
+			}
+
 			r2.fetch(`${process.env.R2_ENDPOINT}/${groupId}/media/${id}`, {
 				method: "DELETE",
 			});

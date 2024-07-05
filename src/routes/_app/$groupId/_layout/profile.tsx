@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { api, queryClient } from "@/trpc/react";
+import { api, apiUtils } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
@@ -81,7 +81,7 @@ function Profile() {
 						navigate({
 							to: "/",
 						});
-						queryClient.clear();
+						apiUtils.invalidate();
 					});
 				}}
 			>

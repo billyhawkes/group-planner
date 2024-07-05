@@ -4,28 +4,21 @@ import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { generateId } from "lucia";
 import { z } from "zod";
-import { protectedProcedure, publicProcedure, router } from "../trpc";
+import { protectedGroupProcedure, router } from "../trpc";
 
 export const messagesRouter = router({
-	find: publicProcedure
-		.input(
-			z.object({
-				groupId: z.string(),
-			})
-		)
-		.query(async ({ ctx: { db }, input: { groupId } }) => {
-			return db.query.messages.findMany({
-				where: eq(messages.groupId, groupId),
-				with: {
-					user: true,
-				},
-			});
-		}),
-	send: protectedProcedure
+	find: protectedGroupProcedure.query(async ({ ctx: { db }, input: { groupId } }) => {
+		return db.query.messages.findMany({
+			where: eq(messages.groupId, groupId),
+			with: {
+				user: true,
+			},
+		});
+	}),
+	send: protectedGroupProcedure
 		.input(
 			z.object({
 				content: z.string(),
-				groupId: z.string(),
 			})
 		)
 		.mutation(async ({ ctx: { db, userId, pusher }, input: { content, groupId } }) => {

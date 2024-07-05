@@ -1,10 +1,13 @@
 import { getDB } from "@/db";
+import { usersToGroups } from "@/db/schema";
 import { getLucia } from "@/lib/lucia";
 import { TRPCError, initTRPC } from "@trpc/server";
 import { AwsClient } from "aws4fetch";
+import { and, eq } from "drizzle-orm";
 import Pusher from "pusher";
 import superjson from "superjson";
 import { EventHandlerRequest, H3Event, getCookie } from "vinxi/http";
+import { z } from "zod";
 
 export const createTRPCContext = async ({ event }: { event: H3Event<EventHandlerRequest> }) => {
 	const sessionId = getCookie(event, "auth_session");
@@ -78,3 +81,32 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 		},
 	});
 });
+
+export const protectedGroupProcedure = protectedProcedure
+	.input(
+		z.object({
+			groupId: z.string(),
+		})
+	)
+	.use(async ({ ctx, input, next }) => {
+		const group = await ctx.db.query.usersToGroups.findFirst({
+			where: and(
+				eq(usersToGroups.groupId, input.groupId),
+				eq(usersToGroups.userId, ctx.userId)
+			),
+		});
+
+		if (!group) {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "You are not a part of this group.",
+			});
+		}
+
+		return next({
+			ctx: {
+				...ctx,
+				role: group.role,
+			},
+		});
+	});
