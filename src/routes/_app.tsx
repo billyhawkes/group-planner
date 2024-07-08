@@ -7,15 +7,15 @@ export const Route = createFileRoute("/_app")({
 });
 
 function App() {
-	const { data: user, isSuccess } = api.users.me.useQuery();
+	const { data: isAuthed } = api.users.isAuthed.useQuery();
 	const navigate = Route.useNavigate();
 
 	useEffect(() => {
-		if (!user && isSuccess)
+		if (isAuthed === null)
 			navigate({
-				to: "/login",
+				to: "/",
 			});
-	}, [user, navigate]);
+	}, [isAuthed, navigate]);
 
 	return <Outlet />;
 }

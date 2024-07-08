@@ -7,7 +7,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
 	return (
-		<div className="flex justify-center items-center w-screen h-screen flex-col gap-8 p-4">
+		<div className="flex flex-1 justify-center items-center flex-col gap-8 p-4">
 			<h1 className="text-center">All-In-One Group Organizer</h1>
 			<p className="text-center">
 				This app lets you chat, share photos, and plan events with anyone all in one place

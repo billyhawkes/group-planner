@@ -87,3 +87,10 @@
 		@apply leading-7;
 	}
 }
+
+body {
+	width: 100vw;
+	width: 100svw;
+	height: 100vh;
+	height: 100svh;
+}

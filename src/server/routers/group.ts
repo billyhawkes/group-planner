@@ -2,7 +2,7 @@ import { groups, usersToGroups } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { generateId } from "lucia";
 import { z } from "zod";
-import { protectedProcedure, router } from "../trpc";
+import { protectedGroupProcedure, protectedProcedure, router } from "../trpc";
 
 export const groupRouter = router({
 	find: protectedProcedure.query(async ({ ctx: { db, userId } }) => {
@@ -14,21 +14,15 @@ export const groupRouter = router({
 		});
 		return data.map(({ group }) => group);
 	}),
-	members: protectedProcedure
-		.input(
-			z.object({
-				groupId: z.string(),
-			})
-		)
-		.query(async ({ ctx: { db }, input: { groupId } }) => {
-			const data = await db.query.usersToGroups.findMany({
-				where: eq(usersToGroups.groupId, groupId),
-				with: {
-					user: true,
-				},
-			});
-			return data.map(({ user }) => user);
-		}),
+	members: protectedGroupProcedure.query(async ({ ctx: { db }, input: { groupId } }) => {
+		const data = await db.query.usersToGroups.findMany({
+			where: eq(usersToGroups.groupId, groupId),
+			with: {
+				user: true,
+			},
+		});
+		return data.map(({ user }) => user);
+	}),
 	create: protectedProcedure
 		.input(
 			z.object({
@@ -45,21 +39,6 @@ export const groupRouter = router({
 				userId,
 				groupId,
 				role: "owner",
-			});
-			return null;
-		}),
-	addMember: protectedProcedure
-		.input(
-			z.object({
-				groupId: z.string(),
-				userId: z.string(),
-			})
-		)
-		.mutation(async ({ ctx: { db }, input: { groupId, userId } }) => {
-			await db.insert(usersToGroups).values({
-				userId,
-				groupId,
-				role: "member",
 			});
 			return null;
 		}),

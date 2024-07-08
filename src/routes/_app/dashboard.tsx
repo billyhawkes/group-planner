@@ -10,8 +10,9 @@ function Groups() {
 	const [groups] = api.groups.find.useSuspenseQuery();
 
 	return (
-		<div className="w-screen h-screen flex flex-col items-center justify-center gap-6">
-			<h1>Groups</h1>
+		<div className="flex flex-1 justify-center items-center flex-col gap-8 p-4">
+			<h1 className="text-center">Groups</h1>
+			<p className="text-center">Select one of your groups below to start</p>
 			{groups?.map((group) => (
 				<Link
 					to="/$groupId/chat"
@@ -19,9 +20,7 @@ function Groups() {
 						groupId: group.id,
 					}}
 					key={group.id}
-					className={buttonVariants({
-						variant: "outline",
-					})}
+					className={buttonVariants()}
 				>
 					<p>{group.name}</p>
 				</Link>

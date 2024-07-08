@@ -13,7 +13,6 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as LoginImport } from './routes/login'
 import { Route as AppImport } from './routes/_app'
 import { Route as IndexImport } from './routes/index'
 import { Route as AppDashboardImport } from './routes/_app/dashboard'
@@ -30,11 +29,6 @@ import { Route as AppGroupIdLayoutChatImport } from './routes/_app/$groupId/_lay
 const AppGroupIdImport = createFileRoute('/_app/$groupId')()
 
 // Create/Update Routes
-
-const LoginRoute = LoginImport.update({
-  path: '/login',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const AppRoute = AppImport.update({
   id: '/_app',
@@ -107,13 +101,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AppImport
-      parentRoute: typeof rootRoute
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
     '/_app/dashboard': {
@@ -199,7 +186,6 @@ export const routeTree = rootRoute.addChildren({
       }),
     }),
   }),
-  LoginRoute,
 })
 
 /* prettier-ignore-end */
@@ -211,8 +197,7 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/_app",
-        "/login"
+        "/_app"
       ]
     },
     "/": {
@@ -224,9 +209,6 @@ export const routeTree = rootRoute.addChildren({
         "/_app/dashboard",
         "/_app/$groupId"
       ]
-    },
-    "/login": {
-      "filePath": "login.tsx"
     },
     "/_app/dashboard": {
       "filePath": "_app/dashboard.tsx",
