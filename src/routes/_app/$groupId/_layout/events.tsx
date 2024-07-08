@@ -31,7 +31,7 @@ import { api, apiUtils } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarPlus, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -83,7 +83,10 @@ const CreateEventDialog = ({ groupId }: { groupId: string }) => {
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button>Create Event</Button>
+				<Button className="gap-2">
+					<CalendarPlus size={17} />
+					Create Event
+				</Button>
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
@@ -189,7 +192,7 @@ function Events() {
 
 	return (
 		<div className="h-full flex flex-col w-full">
-			<div className="flex justify-between items-center px-4 sm:px-8">
+			<div className="flex justify-between flex-wrap gap-4 items-center px-4 sm:px-8">
 				<div className="flex gap-2">
 					<Button
 						size={"icon"}
@@ -245,8 +248,8 @@ function Events() {
 											</p>
 										</div>
 									</SheetTrigger>
-									<SheetContent>
-										<SheetHeader className="flex flex-col space-y-0 gap-4">
+									<SheetContent className="flex flex-col gap-4">
+										<SheetHeader className="flex flex-col space-y-0 gap-4 text-left">
 											<SheetTitle className="scroll-m-20 text-3xl font-semibold tracking-tight;">
 												{event.name}
 											</SheetTitle>
@@ -259,51 +262,51 @@ function Events() {
 													{event.description}
 												</SheetDescription>
 											)}
-											<hr />
-											<div className="flex justify-between gap-2">
-												<Button
-													variant={"outline"}
-													className="flex-1"
-													onClick={() =>
-														updateStatus({
-															id: event.id,
-															accepted: true,
-															groupId,
-														})
-													}
-												>
-													Accept
-												</Button>
-												<Button
-													variant={"outline"}
-													className="flex-1"
-													onClick={() =>
-														updateStatus({
-															id: event.id,
-															accepted: false,
-															groupId,
-														})
-													}
-												>
-													Decline
-												</Button>
-											</div>
-											{event.userToEvents.length > 0 && (
-												<p className="text-muted-foreground text-sm tracking-widest">
-													MEMBERS
-												</p>
-											)}
-											{event.userToEvents.map(({ user, accepted }, i) => (
-												<Member
-													key={i}
-													user={user}
-													hightlight={{
-														text: accepted ? "Accepted" : "Declined",
-														type: accepted ? "on" : "off",
-													}}
-												/>
-											))}
 										</SheetHeader>
+										<hr />
+										<div className="flex justify-between gap-2">
+											<Button
+												variant={"outline"}
+												className="flex-1"
+												onClick={() =>
+													updateStatus({
+														id: event.id,
+														accepted: true,
+														groupId,
+													})
+												}
+											>
+												Accept
+											</Button>
+											<Button
+												variant={"outline"}
+												className="flex-1"
+												onClick={() =>
+													updateStatus({
+														id: event.id,
+														accepted: false,
+														groupId,
+													})
+												}
+											>
+												Decline
+											</Button>
+										</div>
+										{event.userToEvents.length > 0 && (
+											<p className="text-muted-foreground text-sm tracking-widest">
+												MEMBERS
+											</p>
+										)}
+										{event.userToEvents.map(({ user, accepted }, i) => (
+											<Member
+												key={i}
+												user={user}
+												hightlight={{
+													text: accepted ? "Accepted" : "Declined",
+													type: accepted ? "on" : "off",
+												}}
+											/>
+										))}
 									</SheetContent>
 								</Sheet>
 							))}
