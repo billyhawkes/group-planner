@@ -21,6 +21,7 @@ import { Route as AppGroupIdLayoutIndexImport } from './routes/_app/$groupId/_la
 import { Route as AppGroupIdLayoutProfileImport } from './routes/_app/$groupId/_layout/profile'
 import { Route as AppGroupIdLayoutMembersImport } from './routes/_app/$groupId/_layout/members'
 import { Route as AppGroupIdLayoutMediaImport } from './routes/_app/$groupId/_layout/media'
+import { Route as AppGroupIdLayoutJoinImport } from './routes/_app/$groupId/_layout/join'
 import { Route as AppGroupIdLayoutEventsImport } from './routes/_app/$groupId/_layout/events'
 import { Route as AppGroupIdLayoutChatImport } from './routes/_app/$groupId/_layout/chat'
 
@@ -72,6 +73,11 @@ const AppGroupIdLayoutMembersRoute = AppGroupIdLayoutMembersImport.update({
 
 const AppGroupIdLayoutMediaRoute = AppGroupIdLayoutMediaImport.update({
   path: '/media',
+  getParentRoute: () => AppGroupIdLayoutRoute,
+} as any)
+
+const AppGroupIdLayoutJoinRoute = AppGroupIdLayoutJoinImport.update({
+  path: '/join',
   getParentRoute: () => AppGroupIdLayoutRoute,
 } as any)
 
@@ -138,6 +144,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppGroupIdLayoutEventsImport
       parentRoute: typeof AppGroupIdLayoutImport
     }
+    '/_app/$groupId/_layout/join': {
+      id: '/_app/$groupId/_layout/join'
+      path: '/join'
+      fullPath: '/$groupId/join'
+      preLoaderRoute: typeof AppGroupIdLayoutJoinImport
+      parentRoute: typeof AppGroupIdLayoutImport
+    }
     '/_app/$groupId/_layout/media': {
       id: '/_app/$groupId/_layout/media'
       path: '/media'
@@ -179,6 +192,7 @@ export const routeTree = rootRoute.addChildren({
       AppGroupIdLayoutRoute: AppGroupIdLayoutRoute.addChildren({
         AppGroupIdLayoutChatRoute,
         AppGroupIdLayoutEventsRoute,
+        AppGroupIdLayoutJoinRoute,
         AppGroupIdLayoutMediaRoute,
         AppGroupIdLayoutMembersRoute,
         AppGroupIdLayoutProfileRoute,
@@ -227,6 +241,7 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/_app/$groupId/_layout/chat",
         "/_app/$groupId/_layout/events",
+        "/_app/$groupId/_layout/join",
         "/_app/$groupId/_layout/media",
         "/_app/$groupId/_layout/members",
         "/_app/$groupId/_layout/profile",
@@ -239,6 +254,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_app/$groupId/_layout/events": {
       "filePath": "_app/$groupId/_layout/events.tsx",
+      "parent": "/_app/$groupId/_layout"
+    },
+    "/_app/$groupId/_layout/join": {
+      "filePath": "_app/$groupId/_layout/join.tsx",
       "parent": "/_app/$groupId/_layout"
     },
     "/_app/$groupId/_layout/media": {

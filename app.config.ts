@@ -49,6 +49,7 @@ export default createApp({
 				TanStackRouterVite(),
 				config("custom", {
 					define: {
+						"import.meta.env.VITE_SITE_URL": JSON.stringify(process.env.VITE_SITE_URL),
 						"import.meta.env.VITE_R2_URL": JSON.stringify(process.env.VITE_R2_URL),
 						"import.meta.env.VITE_PUSHER_KEY": JSON.stringify(
 							process.env.VITE_PUSHER_KEY
@@ -67,7 +68,7 @@ export default createApp({
 				tsconfigPaths(),
 				config("custom", {
 					define: {
-						"process.env.SITE_URL": JSON.stringify(process.env.SITE_URL),
+						"process.env.VITE_SITE_URL": JSON.stringify(process.env.VITE_SITE_URL),
 						"process.env.GOOGLE_CLIENT_ID": JSON.stringify(
 							process.env.GOOGLE_CLIENT_ID
 						),

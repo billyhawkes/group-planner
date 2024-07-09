@@ -1,9 +1,8 @@
 import { buttonVariants } from "@/components/ui/button";
 import { Link, Outlet, createFileRoute } from "@tanstack/react-router";
 import {
+	ArrowLeft,
 	Calendar,
-	Check,
-	ChevronsUpDown,
 	Image,
 	Loader2,
 	Menu,
@@ -13,19 +12,8 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
-import { useState } from "react";
 
 export const Route = createFileRoute("/_app/$groupId/_layout")({
 	component: Layout,
@@ -35,63 +23,6 @@ export const Route = createFileRoute("/_app/$groupId/_layout")({
 		</div>
 	),
 });
-
-export function GroupPicker({ groups }: { groups: { id: string; name: string }[] }) {
-	const { groupId } = Route.useParams();
-	const [open, setOpen] = useState(false);
-	const navigate = Route.useNavigate();
-
-	return (
-		<Popover open={open} onOpenChange={setOpen}>
-			<PopoverTrigger asChild>
-				<Button
-					variant="outline"
-					role="combobox"
-					aria-expanded={open}
-					className="w-[200px] justify-between"
-				>
-					{groupId
-						? groups.find((group) => group.id === groupId)?.name
-						: "Select group..."}
-					<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-				</Button>
-			</PopoverTrigger>
-			<PopoverContent className="w-[200px] p-0">
-				<Command>
-					<CommandList>
-						<CommandInput placeholder="Search groups..." />
-						<CommandEmpty>No group found.</CommandEmpty>
-						<CommandGroup>
-							{(groups ?? []).map((group) => (
-								<CommandItem
-									key={group.id}
-									value={group.id}
-									onSelect={(currentValue) => {
-										navigate({
-											to: "/$groupId/chat",
-											params: {
-												groupId: currentValue,
-											},
-										});
-										setOpen(false);
-									}}
-								>
-									<Check
-										className={cn(
-											"mr-2 h-4 w-4",
-											group.id === groupId ? "opacity-100" : "opacity-0"
-										)}
-									/>
-									{group.name}
-								</CommandItem>
-							))}
-						</CommandGroup>
-					</CommandList>
-				</Command>
-			</PopoverContent>
-		</Popover>
-	);
-}
 
 const LinksList = ({ groupId }: { groupId: string }) => {
 	return (
@@ -162,7 +93,15 @@ function Layout() {
 	return (
 		<main className="flex flex-col flex-1">
 			<div className="px-4 sm:px-8 min-h-20 h-20 items-center flex gap-2 justify-between">
-				<GroupPicker groups={groups} />
+				<Link
+					to="/dashboard"
+					className={buttonVariants({
+						size: "icon",
+						variant: "outline",
+					})}
+				>
+					<ArrowLeft size={18} />
+				</Link>
 				<div className="gap-2 md:flex hidden justify-between">
 					<LinksList groupId={groupId} />
 				</div>

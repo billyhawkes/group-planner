@@ -31,9 +31,7 @@ export const usersToGroups = sqliteTable(
 	{
 		userId: text("user_id").notNull(),
 		groupId: text("group_id").notNull(),
-		role: text("role")
-			.notNull()
-			.$default(() => "member"), // "member" | "owner"
+		role: text("role").notNull().default("member"),
 	},
 	(t) => ({
 		pk: primaryKey({ columns: [t.userId, t.groupId] }),

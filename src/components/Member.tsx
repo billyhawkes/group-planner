@@ -1,8 +1,6 @@
 import { User } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-type Props = {};
-
 const Member = ({
 	user,
 	hightlight,

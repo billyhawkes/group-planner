@@ -110,3 +110,14 @@ export const protectedGroupProcedure = protectedProcedure
 			},
 		});
 	});
+
+export const protectedGroupOwnerProcedure = protectedGroupProcedure.use(async ({ ctx, next }) => {
+	if (ctx.role !== "owner") {
+		throw new TRPCError({
+			code: "FORBIDDEN",
+			message: "You must be the owner of this group to access this resource.",
+		});
+	}
+
+	return next({ ctx });
+});

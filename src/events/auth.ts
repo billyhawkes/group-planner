@@ -17,13 +17,13 @@ import { z } from "zod";
 export default eventHandler(async (event) => {
 	const url = getRequestURL(event);
 
-	console.log(`${process.env.SITE_URL}/auth/google/callback`);
+	console.log(`${process.env.VITE_SITE_URL}/auth/google/callback`);
 	console.log(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET);
 
 	const google = new Google(
 		process.env.GOOGLE_CLIENT_ID!,
 		process.env.GOOGLE_CLIENT_SECRET!,
-		`${process.env.SITE_URL}/auth/google/callback`
+		`${process.env.VITE_SITE_URL}/auth/google/callback`
 	);
 	const db = getDB();
 	const lucia = getLucia();

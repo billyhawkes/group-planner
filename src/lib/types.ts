@@ -29,3 +29,8 @@ export const CreateEventSchema = EventSchema.omit({
 	description: z.string().min(1).max(1024).optional(),
 });
 export type CreateEvent = z.infer<typeof CreateEventSchema>;
+
+export const CreateGroupSchema = z.object({
+	name: z.string().min(1),
+});
+export type CreateGroup = z.infer<typeof CreateGroupSchema>;

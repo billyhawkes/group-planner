@@ -154,7 +154,8 @@ function Chat() {
 									onChange={(e) => field.handleChange(e.target.value)}
 									type="text"
 									autoComplete="off"
-									className="border border-[#ccc] rounded-xl h-12 w-full focus:outline-none px-4 shadow"
+									placeholder="Type a message..."
+									className="border border-[#ccc] placeholder:text-sm rounded-xl h-12 w-full focus:outline-none px-4 shadow"
 								/>
 							);
 						}}
@@ -164,7 +165,7 @@ function Chat() {
 			<aside className="w-48 border-l p-8 hidden sm:flex">
 				<div className="flex flex-col gap-2">
 					<p className="text-muted-foreground text-sm tracking-widest">MEMBERS</p>
-					{members?.map((user, i) => (
+					{members?.map(({ user }, i) => (
 						<div key={i} className="flex gap-2 items-center">
 							<div className="bg-muted rounded-full w-8 h-8 flex justify-center items-center">
 								<p>{user.name ? user.name[0] : "A"}</p>
