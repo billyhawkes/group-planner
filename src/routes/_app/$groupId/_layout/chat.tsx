@@ -113,7 +113,7 @@ function Chat() {
 								<p>{user.name ? user.name[0] : "A"}</p>
 							</div>
 							<div className="flex flex-col">
-								<p className="font-medium flex items-center">
+								<p className="font-medium flex items-center" data-cy="name-date">
 									{user.name}
 									<span className="text-muted-foreground text-xs ml-2">
 										{dayjs(messages[0].createdAt).isToday()

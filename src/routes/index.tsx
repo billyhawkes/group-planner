@@ -12,7 +12,7 @@ function Index() {
 			<p className="text-center">
 				This app lets you chat, share photos, and plan events with anyone all in one place
 			</p>
-			<a href="/auth/google" className={buttonVariants()}>
+			<a href="/auth/google" className={buttonVariants()} data-cy="login">
 				Login with Google
 			</a>
 		</div>

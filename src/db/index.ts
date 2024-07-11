@@ -4,10 +4,10 @@ import * as schema from "./schema";
 
 // create the connection
 
-export const getDB = () => {
+export const getDB = (options?: { url: string; token: string }) => {
 	const client = createClient({
-		url: process.env.DATABASE_URL!,
-		authToken: process.env.DATABASE_TOKEN!,
+		url: options?.url ? options.url : process.env.DATABASE_URL!,
+		authToken: options?.token ? options.token : process.env.DATABASE_TOKEN!,
 	});
 	return drizzle(client, { schema });
 };

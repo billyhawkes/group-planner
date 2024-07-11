@@ -131,6 +131,7 @@ const CreateEventDialog = ({ groupId }: { groupId: string }) => {
 									<FormLabel>Start</FormLabel>
 									<FormControl>
 										<input
+											name="startsAt"
 											value={field.value}
 											onChange={field.onChange}
 											aria-label="Date and time"
@@ -149,6 +150,7 @@ const CreateEventDialog = ({ groupId }: { groupId: string }) => {
 									<FormLabel>End</FormLabel>
 									<FormControl>
 										<input
+											name="endsAt"
 											value={field.value}
 											onChange={field.onChange}
 											aria-label="Date and time"

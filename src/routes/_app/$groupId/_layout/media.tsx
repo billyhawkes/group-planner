@@ -125,6 +125,7 @@ function Media() {
 									groupId,
 								});
 							}}
+							data-cy="delete-media"
 							className="absolute bottom-2 right-2"
 							variant="outline"
 							size="icon"
