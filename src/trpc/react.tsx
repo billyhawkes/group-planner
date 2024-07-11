@@ -4,9 +4,12 @@ import { httpBatchLink, loggerLink } from "@trpc/client";
 import { createTRPCQueryUtils, createTRPCReact } from "@trpc/react-query";
 import superjson from "superjson";
 
+// Export the TRPC React client
 export const api = createTRPCReact<AppRouter>();
 
 export const queryClient = new QueryClient();
+
+// Trpc client
 const client = api.createClient({
 	links: [
 		loggerLink({
@@ -20,6 +23,8 @@ const client = api.createClient({
 		}),
 	],
 });
+
+// Export the TRPC query utils
 export const apiUtils = createTRPCQueryUtils({ queryClient, client });
 
 export function TRPCReactProvider(props: { children: React.ReactNode }) {

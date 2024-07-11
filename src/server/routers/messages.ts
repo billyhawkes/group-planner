@@ -7,6 +7,7 @@ import { z } from "zod";
 import { protectedGroupProcedure, router } from "../trpc";
 
 export const messagesRouter = router({
+	// Find all messages for a group
 	find: protectedGroupProcedure.query(async ({ ctx: { db }, input: { groupId } }) => {
 		return db.query.messages.findMany({
 			where: eq(messages.groupId, groupId),
@@ -15,6 +16,7 @@ export const messagesRouter = router({
 			},
 		});
 	}),
+	// Send a message to a group
 	send: protectedGroupProcedure
 		.input(
 			z.object({
@@ -30,11 +32,13 @@ export const messagesRouter = router({
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			};
+			// Verify that the user exists
 			const user = await db.query.users.findFirst({
 				where: eq(users.id, userId),
 			});
 			if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 			await db.insert(messages).values(message);
+			// Push the message to the group channel
 			pusher.trigger(`group-${groupId}`, "message", { ...message, user });
 			return { ...message, user };
 		}),

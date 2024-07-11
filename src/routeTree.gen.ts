@@ -17,7 +17,6 @@ import { Route as AppImport } from './routes/_app'
 import { Route as IndexImport } from './routes/index'
 import { Route as AppDashboardImport } from './routes/_app/dashboard'
 import { Route as AppGroupIdLayoutImport } from './routes/_app/$groupId/_layout'
-import { Route as AppGroupIdLayoutIndexImport } from './routes/_app/$groupId/_layout/index'
 import { Route as AppGroupIdLayoutProfileImport } from './routes/_app/$groupId/_layout/profile'
 import { Route as AppGroupIdLayoutMembersImport } from './routes/_app/$groupId/_layout/members'
 import { Route as AppGroupIdLayoutMediaImport } from './routes/_app/$groupId/_layout/media'
@@ -54,11 +53,6 @@ const AppDashboardRoute = AppDashboardImport.update({
 const AppGroupIdLayoutRoute = AppGroupIdLayoutImport.update({
   id: '/_layout',
   getParentRoute: () => AppGroupIdRoute,
-} as any)
-
-const AppGroupIdLayoutIndexRoute = AppGroupIdLayoutIndexImport.update({
-  path: '/',
-  getParentRoute: () => AppGroupIdLayoutRoute,
 } as any)
 
 const AppGroupIdLayoutProfileRoute = AppGroupIdLayoutProfileImport.update({
@@ -172,13 +166,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppGroupIdLayoutProfileImport
       parentRoute: typeof AppGroupIdLayoutImport
     }
-    '/_app/$groupId/_layout/': {
-      id: '/_app/$groupId/_layout/'
-      path: '/'
-      fullPath: '/$groupId/'
-      preLoaderRoute: typeof AppGroupIdLayoutIndexImport
-      parentRoute: typeof AppGroupIdLayoutImport
-    }
   }
 }
 
@@ -196,7 +183,6 @@ export const routeTree = rootRoute.addChildren({
         AppGroupIdLayoutMediaRoute,
         AppGroupIdLayoutMembersRoute,
         AppGroupIdLayoutProfileRoute,
-        AppGroupIdLayoutIndexRoute,
       }),
     }),
   }),
@@ -244,8 +230,7 @@ export const routeTree = rootRoute.addChildren({
         "/_app/$groupId/_layout/join",
         "/_app/$groupId/_layout/media",
         "/_app/$groupId/_layout/members",
-        "/_app/$groupId/_layout/profile",
-        "/_app/$groupId/_layout/"
+        "/_app/$groupId/_layout/profile"
       ]
     },
     "/_app/$groupId/_layout/chat": {
@@ -270,10 +255,6 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_app/$groupId/_layout/profile": {
       "filePath": "_app/$groupId/_layout/profile.tsx",
-      "parent": "/_app/$groupId/_layout"
-    },
-    "/_app/$groupId/_layout/": {
-      "filePath": "_app/$groupId/_layout/index.tsx",
       "parent": "/_app/$groupId/_layout"
     }
   }

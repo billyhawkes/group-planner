@@ -4,6 +4,7 @@ import { createApp } from "vinxi";
 import { config } from "vinxi/plugins/config";
 import tsconfigPaths from "vite-tsconfig-paths";
 
+// Application config
 export default createApp({
 	server: {
 		experimental: {
@@ -11,12 +12,14 @@ export default createApp({
 		},
 	},
 	routers: [
+		// Public folder for images
 		{
 			name: "public",
 			type: "static",
 			dir: "./public",
 			base: "/",
 		},
+		// Trpc server
 		{
 			name: "server",
 			base: "/trpc",
@@ -38,6 +41,7 @@ export default createApp({
 				}),
 			],
 		},
+		// React vite app
 		{
 			name: "client",
 			type: "spa",
@@ -58,6 +62,7 @@ export default createApp({
 				}),
 			],
 		},
+		// Auth event handler for Google OAuth
 		{
 			name: "auth",
 			type: "http",

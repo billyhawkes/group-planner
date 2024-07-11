@@ -1,5 +1,5 @@
 import { getDB } from "@/db";
-import { users, usersToGroups } from "@/db/schema";
+import { users } from "@/db/schema";
 import { getLucia } from "@/lib/lucia";
 import { Google, generateCodeVerifier, generateState } from "arctic";
 import { eq } from "drizzle-orm";
@@ -14,33 +14,38 @@ import {
 } from "vinxi/http";
 import { z } from "zod";
 
+// Initialize Lucia
 export default eventHandler(async (event) => {
 	const url = getRequestURL(event);
 
-	console.log(`${process.env.VITE_SITE_URL}/auth/google/callback`);
-	console.log(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET);
-
+	// Initialize Google OAuth
 	const google = new Google(
 		process.env.GOOGLE_CLIENT_ID!,
 		process.env.GOOGLE_CLIENT_SECRET!,
 		`${process.env.VITE_SITE_URL}/auth/google/callback`
 	);
+	// Initialize the database and Lucia
 	const db = getDB();
 	const lucia = getLucia();
 
+	// Sign out
 	if (url.pathname === "/auth/signout" || url.pathname === "/auth/signout/") {
 		const session = getCookie(event, "auth_session");
 		if (!session) return;
+		// Create a blank session cookie
 		const blankCookie = lucia.createBlankSessionCookie();
+		// Invalidate the session and set the blank cookie
 		setCookie(event, blankCookie.name, blankCookie.value, blankCookie.attributes);
 		await lucia.invalidateSession(session);
 	}
 	if (url.pathname === "/auth/google" || url.pathname === "/auth/google/") {
+		// Generate a state and code verifier
 		const state = generateState();
 		const codeVerifier = generateCodeVerifier();
 		const url: URL = await google.createAuthorizationURL(state, codeVerifier, {
 			scopes: ["profile", "email"],
 		});
+		// Set the cookies for google auth
 		setCookie(event, "state", state, {
 			secure: process.env.NODE_ENV === "production",
 			path: "/",
@@ -53,6 +58,7 @@ export default eventHandler(async (event) => {
 			httpOnly: true,
 			maxAge: 60 * 10, // 10 min
 		});
+		// Redirect to the google auth page
 		return sendRedirect(event, url.toString());
 	}
 
@@ -68,7 +74,10 @@ export default eventHandler(async (event) => {
 			throw new Error("Invalid request");
 		}
 
+		// Exchange the authorization code for tokens
 		const tokens = await google.validateAuthorizationCode(code, storedCodeVerifier);
+
+		// Fetch the user's profile
 		const response = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
 			headers: {
 				Authorization: `Bearer ${tokens.accessToken}`,
@@ -87,6 +96,7 @@ export default eventHandler(async (event) => {
 			where: eq(users.googleId, googleId),
 		});
 
+		// Create a new user if they don't exist
 		if (!existingUser) {
 			userId = generateId(15);
 			await db.insert(users).values({
@@ -95,18 +105,15 @@ export default eventHandler(async (event) => {
 				googleId,
 				name: "Anonymous",
 			});
-			// Temporary: Add user to test group
-			await db.insert(usersToGroups).values({
-				userId,
-				groupId: "1",
-			});
 		} else {
 			userId = existingUser.id;
 		}
+		// Create a session for the user
 		const session = await lucia.createSession(userId, {
 			email,
 			googleId,
 		});
+		// Set the session cookie
 		const sessionCookie = lucia.createSessionCookie(session.id);
 		setCookie(event, sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 		return sendRedirect(event, "/dashboard");

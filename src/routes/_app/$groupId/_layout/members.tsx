@@ -10,23 +10,30 @@ export const Route = createFileRoute("/_app/$groupId/_layout/members")({
 });
 
 function Members() {
+	// Get the group ID from the route
 	const { groupId } = Route.useParams();
+
+	// Query for the current user and group members
 	const { data: me } = api.users.me.useQuery();
 	const { data: members } = api.groups.members.useQuery({
 		groupId,
 	});
+
+	// Setup the kick mutation
 	const { mutate } = api.groups.kick.useMutation({
 		onSuccess: () => {
 			apiUtils.groups.members.invalidate({ groupId });
 		},
 	});
 
+	// Check if the current user is an owner
 	const isOwner = members?.some(({ role, user }) => role === "owner" && me?.id === user.id);
 
+	// Setup the join link
 	const joinLink = `${import.meta.env.VITE_SITE_URL}/${groupId}/join`;
 
+	// Setup the copied state and copy function
 	const [copied, setCopied] = useState(false);
-
 	const copy = async (text: string) => {
 		await navigator.clipboard.writeText(text);
 		setCopied(true);
@@ -39,6 +46,7 @@ function Members() {
 		<div className="flex flex-col gap-6 p-4 sm:p-8 w-full">
 			<h1>Members</h1>
 			<hr />
+			{/* If owner show the join link */}
 			{isOwner && (
 				<>
 					<div className="flex flex-col gap-2">
@@ -51,6 +59,7 @@ function Members() {
 								className="gap-2"
 							>
 								<Copy size={16} />
+								{/* Will show copied for 2 seconds after copying */}
 								{copied ? "Copied!" : "Copy"}
 							</Button>
 						</div>
@@ -59,6 +68,7 @@ function Members() {
 				</>
 			)}
 			<div className="flex-1 overflow-y-auto flex-col flex gap-4 pr-4">
+				{/* Loop through members and display their information */}
 				{members?.map(({ user, role }, i) => (
 					<div key={user.id} className="flex justify-between items-center">
 						<Member user={user} />

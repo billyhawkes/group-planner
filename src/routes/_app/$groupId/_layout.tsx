@@ -13,8 +13,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { api } from "@/trpc/react";
 
+// Initialize the layout route
 export const Route = createFileRoute("/_app/$groupId/_layout")({
 	component: Layout,
 	pendingComponent: () => (
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/_app/$groupId/_layout")({
 	),
 });
 
+// List of links to show in the header or in the sheet
 const LinksList = ({ groupId }: { groupId: string }) => {
 	return (
 		<>
@@ -88,11 +89,11 @@ const LinksList = ({ groupId }: { groupId: string }) => {
 
 function Layout() {
 	const { groupId } = Route.useParams();
-	const [groups] = api.groups.find.useSuspenseQuery();
 
 	return (
 		<main className="flex flex-col flex-1">
 			<div className="px-4 sm:px-8 min-h-20 h-20 items-center flex gap-2 justify-between">
+				{/* Back button that goes to group picker */}
 				<Link
 					to="/dashboard"
 					className={buttonVariants({
@@ -102,6 +103,7 @@ function Layout() {
 				>
 					<ArrowLeft size={18} />
 				</Link>
+				{/* Either show links in sheet or in the header normally */}
 				<div className="gap-2 md:flex hidden justify-between">
 					<LinksList groupId={groupId} />
 				</div>
@@ -121,6 +123,7 @@ function Layout() {
 					</SheetContent>
 				</Sheet>
 			</div>
+			{/* Outlet to rest of site */}
 			<div className="flex-1 flex h-[calc(100%-80px)]">
 				<Outlet />
 			</div>

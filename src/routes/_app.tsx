@@ -7,9 +7,11 @@ export const Route = createFileRoute("/_app")({
 });
 
 function App() {
+	// Check if the user is authenticated
 	const { data: isAuthed } = api.users.isAuthed.useQuery();
 	const navigate = Route.useNavigate();
 
+	// If the user is not authenticated, redirect to the home page
 	useEffect(() => {
 		if (isAuthed === null)
 			navigate({

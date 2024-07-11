@@ -2,6 +2,8 @@ import { events, messages, users } from "@/db/schema";
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Create types from select schema for users, messages, groups, and events
+
 export const UserSchema = createSelectSchema(users);
 export type User = z.infer<typeof UserSchema>;
 

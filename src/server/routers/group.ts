@@ -12,6 +12,7 @@ import {
 } from "../trpc";
 
 export const groupRouter = router({
+	// Find all groups for the user
 	find: protectedProcedure.query(async ({ ctx: { db, userId } }) => {
 		const data = await db.query.usersToGroups.findMany({
 			where: eq(usersToGroups.userId, userId),
@@ -21,6 +22,7 @@ export const groupRouter = router({
 		});
 		return data.map(({ group }) => group);
 	}),
+	// Find all members of a group
 	members: protectedGroupProcedure.query(async ({ ctx: { db }, input: { groupId } }) => {
 		return db.query.usersToGroups.findMany({
 			where: eq(usersToGroups.groupId, groupId),
@@ -29,14 +31,17 @@ export const groupRouter = router({
 			},
 		});
 	}),
+	// Create a new group
 	create: protectedProcedure
 		.input(CreateGroupSchema)
 		.mutation(async ({ ctx: { db, userId }, input: { name } }) => {
 			const groupId = generateId(15);
+			// Create the group
 			await db.insert(groups).values({
 				id: groupId,
 				name,
 			});
+			// Add the user as an owner
 			await db.insert(usersToGroups).values({
 				userId,
 				groupId,
@@ -44,6 +49,7 @@ export const groupRouter = router({
 			});
 			return { groupId };
 		}),
+	// Join a group
 	join: protectedProcedure
 		.input(
 			z.object({
@@ -51,6 +57,7 @@ export const groupRouter = router({
 			})
 		)
 		.mutation(async ({ ctx: { db, userId }, input: { groupId } }) => {
+			// Verify that the group exists
 			const group = await db.query.groups.findFirst({
 				where: eq(groups.id, groupId),
 			});
@@ -60,6 +67,7 @@ export const groupRouter = router({
 					message: "Group not found",
 				});
 
+			// Add the user to the group as a member
 			await db
 				.insert(usersToGroups)
 				.values({
@@ -71,6 +79,7 @@ export const groupRouter = router({
 
 			return { groupId };
 		}),
+	// Kick a user from a group (only the owner can do this)
 	kick: protectedGroupOwnerProcedure
 		.input(
 			z.object({

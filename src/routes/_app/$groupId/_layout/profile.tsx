@@ -20,12 +20,14 @@ export const Route = createFileRoute("/_app/$groupId/_layout/profile")({
 });
 
 function Profile() {
+	// Get the current user
 	const [user] = api.users.me.useSuspenseQuery();
 	const navigate = Route.useNavigate();
 
+	// Setup the edit user mutation
 	const { mutate: editUser } = api.users.update.useMutation();
 
-	// 1. Define your form.
+	// Setup the form with the user data as default if it exists
 	const form = useForm<EditUser>({
 		resolver: zodResolver(EditUserSchema),
 		defaultValues: {
@@ -34,6 +36,7 @@ function Profile() {
 		},
 	});
 
+	// Handle form submission
 	function onSubmit(values: EditUser) {
 		editUser(values);
 	}
@@ -42,6 +45,7 @@ function Profile() {
 		<div className="flex flex-col gap-4 p-4 sm:p-8">
 			<h1>Profile</h1>
 			<p>Page to edit profile photo, email, name and login settings</p>
+			{/* Edit user profile form */}
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 					<FormField
@@ -74,6 +78,7 @@ function Profile() {
 				</form>
 			</Form>
 			<hr />
+			{/* Sign out button that navigates home and clears the cache */}
 			<Button
 				variant="outline"
 				onClick={() => {

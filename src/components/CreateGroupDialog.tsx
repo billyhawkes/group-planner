@@ -24,8 +24,11 @@ import { useForm } from "react-hook-form";
 
 const CreateGroupDialog = ({ children }: { children: React.ReactNode }) => {
 	const navigate = useNavigate();
+
+	// Create a new group mutation
 	const { mutate } = api.groups.create.useMutation({
 		onSuccess: ({ groupId }) => {
+			// Invalidate the groups query and navigate to the chat page of the new group
 			apiUtils.groups.find.invalidate();
 			navigate({
 				to: "/$groupId/chat",
@@ -35,6 +38,8 @@ const CreateGroupDialog = ({ children }: { children: React.ReactNode }) => {
 			});
 		},
 	});
+
+	// Setup the form
 	const form = useForm<CreateGroup>({
 		resolver: zodResolver(CreateGroupSchema),
 		defaultValues: {
@@ -42,11 +47,15 @@ const CreateGroupDialog = ({ children }: { children: React.ReactNode }) => {
 		},
 	});
 
+	// Handle form submission
 	const onSubmit = (values: CreateGroup) => {
 		mutate(values);
 	};
+
 	return (
+		// Dialog component
 		<Dialog>
+			{/* Allow the component to render trigger */}
 			{children}
 			<DialogContent>
 				<DialogHeader>
@@ -57,6 +66,7 @@ const CreateGroupDialog = ({ children }: { children: React.ReactNode }) => {
 				</DialogHeader>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+						{/* Name field */}
 						<FormField
 							control={form.control}
 							name="name"

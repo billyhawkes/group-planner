@@ -40,6 +40,7 @@ export const Route = createFileRoute("/_app/$groupId/_layout/events")({
 	component: Events,
 });
 
+// Create schema for the event creation form
 const CreateEventFormSchema = CreateEventSchema.extend({
 	startsAt: z.string().min(1, {
 		message: "Start date is required",
@@ -50,16 +51,12 @@ const CreateEventFormSchema = CreateEventSchema.extend({
 });
 type CreateEventForm = z.infer<typeof CreateEventFormSchema>;
 
+// Dialog that holds the event form
 const CreateEventDialog = ({ groupId }: { groupId: string }) => {
+	// Open/close state for the dialog (allows manually closing on creation)
 	const [open, setOpen] = useState(false);
-	const { mutate } = api.events.create.useMutation({
-		onSuccess: () => {
-			apiUtils.events.find.invalidate({
-				groupId,
-			});
-			setOpen(false);
-		},
-	});
+
+	// Initialize the form and default form values
 	const form = useForm<CreateEventForm>({
 		resolver: zodResolver(CreateEventFormSchema),
 		defaultValues: {
@@ -70,7 +67,20 @@ const CreateEventDialog = ({ groupId }: { groupId: string }) => {
 		},
 	});
 
-	// 2. Define a submit handler.
+	// Create the event mutation
+	const { mutate } = api.events.create.useMutation({
+		onSuccess: () => {
+			// Invalidate the events query to refetch the data
+			apiUtils.events.find.invalidate({
+				groupId,
+			});
+			// Reset the form to default values and close the dialog
+			form.reset();
+			setOpen(false);
+		},
+	});
+
+	// On form submit, call the event creation mutation
 	const onSubmit = (values: CreateEventForm) => {
 		mutate({
 			...values,
@@ -81,7 +91,9 @@ const CreateEventDialog = ({ groupId }: { groupId: string }) => {
 	};
 
 	return (
+		// Dialog component that holds the form and attaches the open/close state
 		<Dialog open={open} onOpenChange={setOpen}>
+			{/* Dialog trigger that opens the dialog when clicked */}
 			<DialogTrigger asChild>
 				<Button className="gap-2">
 					<CalendarPlus size={17} />
@@ -89,6 +101,7 @@ const CreateEventDialog = ({ groupId }: { groupId: string }) => {
 				</Button>
 			</DialogTrigger>
 			<DialogContent>
+				{/* Dialog header with title and description explaining the form */}
 				<DialogHeader>
 					<DialogTitle>Create Event</DialogTitle>
 					<DialogDescription>
@@ -97,6 +110,7 @@ const CreateEventDialog = ({ groupId }: { groupId: string }) => {
 				</DialogHeader>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+						{/* Event name field */}
 						<FormField
 							control={form.control}
 							name="name"
@@ -110,6 +124,7 @@ const CreateEventDialog = ({ groupId }: { groupId: string }) => {
 								</FormItem>
 							)}
 						/>
+						{/* Event description field */}
 						<FormField
 							control={form.control}
 							name="description"
@@ -123,6 +138,7 @@ const CreateEventDialog = ({ groupId }: { groupId: string }) => {
 								</FormItem>
 							)}
 						/>
+						{/* Event starts at field */}
 						<FormField
 							control={form.control}
 							name="startsAt"
@@ -142,6 +158,7 @@ const CreateEventDialog = ({ groupId }: { groupId: string }) => {
 								</FormItem>
 							)}
 						/>
+						{/* Event ends at field */}
 						<FormField
 							control={form.control}
 							name="endsAt"
@@ -161,6 +178,7 @@ const CreateEventDialog = ({ groupId }: { groupId: string }) => {
 								</FormItem>
 							)}
 						/>
+						{/* Submit button */}
 						<Button type="submit">Submit</Button>
 					</form>
 				</Form>
@@ -170,20 +188,26 @@ const CreateEventDialog = ({ groupId }: { groupId: string }) => {
 };
 
 function Events() {
+	// Get the group ID from the route params
 	const { groupId } = Route.useParams();
+
+	// Query for events in the group
 	const { data: events } = api.events.find.useQuery({
 		groupId,
 	});
-	const [current, setCurrent] = useState(dayjs());
-	const daysThisMonth = current.daysInMonth();
+
+	// State for map
+	const [current, setCurrent] = useState(dayjs()); // Current day
+	const daysThisMonth = current.daysInMonth(); // Days in current month
 	const datesInMonth = Array.from({ length: daysThisMonth }).map((_, i) => {
 		return current.date(i + 1);
-	});
-	const startDay = current.startOf("month").day();
-	const dateFormatted = current.format("MMMM") + " " + current.format("YYYY");
+	}); // Array of each day in the month
+	const startDay = current.startOf("month").day(); // Day of the week the month starts on
+	const dateFormatted = current.format("MMMM") + " " + current.format("YYYY"); // Formatted date
 
-	const fillerBoxes = Array.from({ length: 7 - ((daysThisMonth + startDay) % 7) });
+	const fillerBoxes = Array.from({ length: 7 - ((daysThisMonth + startDay) % 7) }); // Boxes to be empty after month ends
 
+	// Create the event status mutation (updates event accepted/declined)
 	const { mutate: updateStatus } = api.events.status.useMutation({
 		onSuccess: () => {
 			apiUtils.events.find.invalidate({
@@ -196,6 +220,7 @@ function Events() {
 		<div className="h-full flex flex-col w-full">
 			<div className="flex justify-between flex-wrap gap-4 items-center px-4 sm:px-8">
 				<div className="flex gap-2">
+					{/* Button to go back a month */}
 					<Button
 						size={"icon"}
 						variant={"outline"}
@@ -203,6 +228,7 @@ function Events() {
 					>
 						<ChevronLeft size={20} />
 					</Button>
+					{/* Button to go forward a month */}
 					<Button
 						size={"icon"}
 						variant={"outline"}
@@ -210,37 +236,47 @@ function Events() {
 					>
 						<ChevronRight size={20} />
 					</Button>
+					{/* Button to go to today */}
 					<Button variant={"outline"} onClick={() => setCurrent(dayjs())}>
 						Today
 					</Button>
+					{/* Title with formatted date */}
 					<h2>{dateFormatted}</h2>
 				</div>
+				{/* Create event dialog */}
 				<CreateEventDialog groupId={groupId} />
 			</div>
 			<hr className="mt-4" />
 			<div className="grid grid-cols-7">
+				{/* List of days of the week for header of calendar */}
 				{["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => (
 					<div key={day} className="py-2 sm:py-4 bg-white">
 						<p className="text-center">{day}</p>
 					</div>
 				))}
 			</div>
+			{/* Calendar grid */}
 			<div className="grid grid-cols-7 flex-1 gap-[1px] bg-[#ccc]">
+				{/* Empty boxes for days before the month starts */}
 				{Array.from({ length: startDay }).map((_, i) => (
 					<div key={i} className="flex-1 bg-white"></div>
 				))}
+				{/* Calendar boxes for each day in the month */}
 				{datesInMonth.map((day, i) => (
 					<div key={i} className="flex-1 sm:p-1 md:p-2 bg-white flex flex-col gap-1">
 						<span className="px-1 sm:px-0">{day.date()}</span>
+						{/* Events for each day */}
 						{events
 							?.filter((event) => day.isSame(event.startsAt, "day"))
 							.map((event) => (
+								// Event sheet for each event
 								<Sheet key={event.id}>
 									<SheetTrigger asChild>
 										<div
 											key={event.id}
 											className="bg-muted rounded p-1 pr-0 sm:p-2 cursor-pointer"
 										>
+											{/* Show date and name (date hidden on mobile) */}
 											<p className="text-sm hidden md:block text-muted-foreground">
 												{dayjs(event.startsAt).format("HH:mm")}-
 												{dayjs(event.endsAt).format("HH:mm")}
@@ -251,6 +287,7 @@ function Events() {
 										</div>
 									</SheetTrigger>
 									<SheetContent className="flex flex-col gap-4">
+										{/* Sheet titile, description, and time */}
 										<SheetHeader className="flex flex-col space-y-0 gap-4 text-left">
 											<SheetTitle className="scroll-m-20 text-3xl font-semibold tracking-tight;">
 												{event.name}
@@ -266,6 +303,7 @@ function Events() {
 											)}
 										</SheetHeader>
 										<hr />
+										{/* Accept/decline buttons */}
 										<div className="flex justify-between gap-2">
 											<Button
 												variant={"outline"}
@@ -299,6 +337,7 @@ function Events() {
 												MEMBERS
 											</p>
 										)}
+										{/* List of members who have accepted/declined */}
 										{event.userToEvents.map(({ user, accepted }, i) => (
 											<Member
 												key={i}
@@ -314,6 +353,7 @@ function Events() {
 							))}
 					</div>
 				))}
+				{/* Empty boxes for days after the month ends */}
 				{fillerBoxes.length !== 7 &&
 					fillerBoxes.map((_, i) => <div key={i} className="flex-1 p-4 bg-white"></div>)}
 			</div>

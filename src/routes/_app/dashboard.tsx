@@ -10,6 +10,7 @@ export const Route = createFileRoute("/_app/dashboard")({
 });
 
 function Groups() {
+	// Get the list of groups
 	const [groups] = api.groups.find.useSuspenseQuery();
 
 	return (
@@ -17,6 +18,7 @@ function Groups() {
 			<h1 className="text-center">Groups</h1>
 			<p className="text-center">Select one of your groups below or create a new one</p>
 			<div className="flex gap-2 flex-wrap">
+				{/* Loop through the groups and show a button for each */}
 				{groups?.map((group) => (
 					<Link
 						to="/$groupId/chat"
@@ -29,6 +31,7 @@ function Groups() {
 						<p>{group.name}</p>
 					</Link>
 				))}
+				{/* Open the CreateGroupDialog when the button is clicked */}
 				<CreateGroupDialog>
 					<DialogTrigger asChild>
 						<Button variant={"outline"} className="gap-2">

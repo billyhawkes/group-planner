@@ -70,6 +70,7 @@
 	}
 }
 
+/* Default styling */
 @layer base {
 	h1 {
 		@apply scroll-m-20 text-4xl font-extrabold tracking-tight;
@@ -88,6 +89,7 @@
 	}
 }
 
+/* Keep body full for manual scrolling */
 body {
 	width: 100vw;
 	width: 100svw;

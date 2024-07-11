@@ -9,10 +9,13 @@ import superjson from "superjson";
 import { EventHandlerRequest, H3Event, getCookie } from "vinxi/http";
 import { z } from "zod";
 
+// Initialize tRPC context
 export const createTRPCContext = async ({ event }: { event: H3Event<EventHandlerRequest> }) => {
+	// Get the session id from the cookie and lucia
 	const sessionId = getCookie(event, "auth_session");
 	const lucia = getLucia();
 
+	// Initialize the utils object
 	const utils = {
 		db: getDB(),
 		r2: new AwsClient({
@@ -36,8 +39,10 @@ export const createTRPCContext = async ({ event }: { event: H3Event<EventHandler
 		};
 	}
 
+	// Validate the session based on the session id
 	const { session } = await lucia.validateSession(sessionId);
 
+	// Pass the session id to the context
 	if (!session) {
 		return {
 			...utils,
@@ -66,6 +71,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 export const router = t.router;
 export const publicProcedure = t.procedure;
 
+// Procedure to check if the user is logged in
 export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 	if (!ctx.userId) {
 		throw new TRPCError({
@@ -82,6 +88,7 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 	});
 });
 
+// Procedure to check if the user is a part of the group and apply the group id to every procedure
 export const protectedGroupProcedure = protectedProcedure
 	.input(
 		z.object({
@@ -111,6 +118,7 @@ export const protectedGroupProcedure = protectedProcedure
 		});
 	});
 
+// Procedure to check if the user is the owner of the group
 export const protectedGroupOwnerProcedure = protectedGroupProcedure.use(async ({ ctx, next }) => {
 	if (ctx.role !== "owner") {
 		throw new TRPCError({

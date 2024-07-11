@@ -5,6 +5,7 @@ import { messagesRouter } from "./routers/messages";
 import { userRouter } from "./routers/user";
 import { router } from "./trpc";
 
+// Initialize the app router
 export const appRouter = router({
 	media: mediaRouter,
 	messages: messagesRouter,

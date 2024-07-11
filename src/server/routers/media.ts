@@ -6,6 +6,7 @@ import { z } from "zod";
 import { protectedGroupProcedure, router } from "../trpc";
 
 export const mediaRouter = router({
+	// Find all media for a group
 	find: protectedGroupProcedure.query(async ({ ctx: { db }, input: { groupId } }) => {
 		return db.query.media.findMany({
 			where: eq(media.groupId, groupId),
@@ -14,6 +15,7 @@ export const mediaRouter = router({
 			},
 		});
 	}),
+	// Get a presigned URL for uploading media
 	getPresignedUrl: protectedGroupProcedure
 		.input(
 			z.object({
@@ -23,6 +25,8 @@ export const mediaRouter = router({
 		)
 		.mutation(async ({ ctx: { r2 }, input: { type, size, groupId } }) => {
 			const id = generateId(15);
+
+			// Use r2 client to sign the URL
 			const res = await r2.sign(`${process.env.R2_ENDPOINT}/${groupId}/media/${id}`, {
 				method: "PUT",
 				headers: {
@@ -39,6 +43,7 @@ export const mediaRouter = router({
 				id,
 			};
 		}),
+	// Create a new media entry in the database
 	create: protectedGroupProcedure
 		.input(
 			z.object({
@@ -54,6 +59,7 @@ export const mediaRouter = router({
 				createdAt: new Date(),
 			});
 		}),
+	// Delete a media entry from the database and blob
 	delete: protectedGroupProcedure
 		.input(
 			z.object({
