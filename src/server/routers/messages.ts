@@ -39,7 +39,7 @@ export const messagesRouter = router({
 			if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
 			await db.insert(messages).values(message);
 			// Push the message to the group channel
-			pusher.trigger(`group-${groupId}`, "message", { ...message, user });
+			await pusher.trigger(`group-${groupId}`, "message", { ...message, user });
 			return { ...message, user };
 		}),
 });

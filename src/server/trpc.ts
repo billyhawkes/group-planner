@@ -4,7 +4,7 @@ import { getLucia } from "@/lib/lucia";
 import { TRPCError, initTRPC } from "@trpc/server";
 import { AwsClient } from "aws4fetch";
 import { and, eq } from "drizzle-orm";
-import Pusher from "pusher-http-edge";
+import Pusher from "pusher";
 import superjson from "superjson";
 import { EventHandlerRequest, H3Event, getCookie } from "vinxi/http";
 import { z } from "zod";
