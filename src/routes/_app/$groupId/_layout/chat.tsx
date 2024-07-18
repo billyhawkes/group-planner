@@ -117,9 +117,9 @@ function Chat() {
 	return (
 		<div className="flex w-full justify-between p-4 sm:p-8">
 			<div className="flex justify-end flex-col flex-1">
-				<div className="flex flex-col gap-2 py-2 overflow-auto shrink sm:pr-8">
+				<div className="flex flex-col-reverse gap-2 py-2 overflow-auto shrink sm:pr-8">
 					{/* Loop through the grouped messages */}
-					{groupedMessages.map(({ user, messages }, i) => (
+					{groupedMessages.reverse().map(({ user, messages }, i) => (
 						<div key={i} className="flex gap-2">
 							{/* Display the user avatar */}
 							<div className="bg-muted rounded-full w-10 h-10 flex justify-center items-center">
