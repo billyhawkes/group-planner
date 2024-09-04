@@ -87,7 +87,7 @@ function Media() {
 	}, [openImage, media]);
 
 	return (
-		<div className="overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1 w-full h-full p-4 sm:p-8">
+		<div className="overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 grid-rows-[192px] w-full p-4 sm:p-8">
 			{/* File upload input */}
 			<input
 				type="file"
